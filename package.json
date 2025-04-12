@@ -1,0 +1,32 @@
+{
+  "name": "onlineedu",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "cd src && nodemon server ",
+    "dev": "nodemon --watch server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/isahmet089/OnlineEdu.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/isahmet089/OnlineEdu/issues"
+  },
+  "homepage": "https://github.com/isahmet089/OnlineEdu#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "mongoose": "^8.13.2",
+    "morgan": "^1.10.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.9"
+  }
+}
