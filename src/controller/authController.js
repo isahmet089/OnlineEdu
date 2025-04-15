@@ -1,14 +1,61 @@
 const User = require("../models/User");
+const jwt = require("jsonwebtoken");
+const { accessToken, refreshToken } = require("../config/jwtConfig");
+const RefreshToken = require("../models/RefreshToken");
+const cookieParser = require("cookie-parser");
 
+const generateTokens = (user) => {
+  const accessTokenPayload = {
+    id: user._id,
+    email: user.email,
+    role: user.role,
+  };
+  const refreshTokenPayload = { id: user._id };
 
+  const newAccessToken = jwt.sign(accessTokenPayload, accessToken.secret, {
+    expiresIn: accessToken.expiresIn,
+  });
+
+  const newRefreshToken = jwt.sign(refreshTokenPayload, refreshToken.secret, {
+    expiresIn: refreshToken.expiresIn,
+  });
+
+  return { accessToken: newAccessToken, refreshToken: newRefreshToken };
+};
 const login = async (req, res) => {
     const { email, password } = req.body;
     try {
       if(!email || !password) throw new Error("Email veya şifre gereklidir");
       const user =await User.findOne({ email });
       if(!user) throw new Error("Kullanıcı bulunamadı");
+
       const isMatch = await user.comparePassword(password);
       if(!isMatch) throw new Error("Şifre yanlış");
+      // Kullanıcının eski tüm refresh tokenlarını sil
+      await RefreshToken.deleteMany({ userId: user._id });
+      // Yeni tokenları oluştur
+      const tokens = generateTokens(user);
+      // Yeni refresh token'ı veritabanına kaydet
+      await RefreshToken.create({
+      userId: user._id,
+      token: tokens.refreshToken,
+    });
+    // Cookie'leri ayarla
+    res.cookie("accessToken", tokens.accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 15 * 60 * 1000, // 15 dakika
+    });
+
+    res.cookie("refreshToken", tokens.refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      path: "/api/auth/refresh-token",
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 gün
+    });
+    console.log(req.user);
       res.status(200).json({ message: "Giriş başarılı", user });
     } catch (error) {
       res.status(500).json({ message: error.message });
@@ -37,16 +84,65 @@ const register = async (req, res) => {
   }
 };
 const logout = async (req, res) => {
-   try {
-    
-    res.status(200).json({ message: "Başarıyla çıkış yapıldı" });
+ 
+  try {
+    const refreshToken = req.cookies.refreshToken;
+    console.log(refreshToken);
+    if (refreshToken) {
+      RefreshToken.deleteOne({ token: refreshToken });
+    }
+
+    // Clear cookies
+    res.clearCookie("accessToken");
+    res.clearCookie("refreshToken", { path: "/api/auth/refresh-token" });
+
+    res.json({ message: "Logged out successfully" });
   } catch (error) {
-    res.status(500).json({ message: error.message });
-  } 
+    res.status(400).json({ message: error.message });
+  }
+};
+const refreshTokens = async (req, res) => {
+  try {
+    const oldRefreshToken = req.body.refreshToken;
+    console.log(req.user);
+
+    // Remove old refresh token
+    await RefreshToken.deleteOne({ token: oldRefreshToken });
+
+    // Generate new tokens
+    const tokens = generateTokens(req.user);
+
+    // Save new refresh token
+    await RefreshToken.create({
+      userId: req.user.id,
+      token: tokens.refreshToken,
+    });
+
+    // Set cookies
+    res.cookie("accessToken", tokens.accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 15 * 60 * 1000, // 15 minutes
+    });
+
+    res.cookie("refreshToken", tokens.refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      path: "/api/auth/refresh-token",
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    });
+
+    res.json({ message: "Tokens refreshed" });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
 };
 
 module.exports = {
   login,
   register,
   logout,
+  refreshTokens
 };
