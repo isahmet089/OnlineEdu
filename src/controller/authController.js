@@ -3,7 +3,8 @@ const jwt = require("jsonwebtoken");
 const { accessToken, refreshToken } = require("../config/jwtConfig");
 const RefreshToken = require("../models/RefreshToken");
 const EmailService = require("../utils/emailService");
-
+const { v4: uuidv4 } = require("uuid");
+const redisClient = require("../config/redisConfig"); // Redis istemciniz
 
 const generateTokens = (user) => {
   const accessTokenPayload = {
@@ -24,20 +25,20 @@ const generateTokens = (user) => {
   return { accessToken: newAccessToken, refreshToken: newRefreshToken };
 };
 const login = async (req, res) => {
-    const { email, password } = req.body;
-    try {
-      if(!email || !password) throw new Error("Email veya şifre gereklidir");
-      const user =await User.findOne({ email });
-      if(!user) throw new Error("Kullanıcı bulunamadı");
+  const { email, password } = req.body;
+  try {
+    if (!email || !password) throw new Error("Email veya şifre gereklidir");
+    const user = await User.findOne({ email });
+    if (!user) throw new Error("Kullanıcı bulunamadı");
 
-      const isMatch = await user.comparePassword(password);
-      if(!isMatch) throw new Error("Şifre yanlış");
-      // Kullanıcının eski tüm refresh tokenlarını sil
-      await RefreshToken.deleteMany({ userId: user._id });
-      // Yeni tokenları oluştur
-      const tokens = generateTokens(user);
-      // Yeni refresh token'ı veritabanına kaydet
-      await RefreshToken.create({
+    const isMatch = await user.comparePassword(password);
+    if (!isMatch) throw new Error("Şifre yanlış");
+    // Kullanıcının eski tüm refresh tokenlarını sil
+    await RefreshToken.deleteMany({ userId: user._id });
+    // Yeni tokenları oluştur
+    const tokens = generateTokens(user);
+    // Yeni refresh token'ı veritabanına kaydet
+    await RefreshToken.create({
       userId: user._id,
       token: tokens.refreshToken,
     });
@@ -58,17 +59,17 @@ const login = async (req, res) => {
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 gün
     });
     console.log(req.user);
-      res.status(200).json({ message: "Giriş başarılı", user });
-    } catch (error) {
-      res.status(500).json({ message: error.message });
-    }
+    res.status(200).json({ message: "Giriş başarılı", user });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 };
 const register = async (req, res) => {
   const { firstName, lastName, email, password, role } = req.body;
   try {
     if (!firstName || !lastName || !email || !password) {
       throw new Error("Tüm alanlar gereklidir");
-    };
+    }
     const existingUser = await User.findOne({ email });
     if (existingUser) throw new Error("Bu e-posta adresi zaten kullanılıyor");
     const user = new User({
@@ -81,10 +82,19 @@ const register = async (req, res) => {
     await user.save();
     // Kullanıcı kaydedildikten sonra hoş geldiniz e-postası gönder
     await EmailService.sendWelcomeEmail(user);
-     
+    // doğrulama kodu oluştur
+    const verificationToken = uuidv4();
+    const redisKey = `verify_email:${verificationToken}`;
+    const ttlInSeconds = 15 * 60; // 15 dakika
+    await redisClient.setex(redisKey, ttlInSeconds, user.id.toString()); // user.id objectId ise string'e çevir
+    console.log(
+      `Token stored in Redis for user ${user.id}: ${redisKey} with TTL ${ttlInSeconds}s`
+    );
+    // doğrulama kodunu e-posta ile gönder
+    await EmailService.sendVerificationEmail(user, verificationToken);
+
     res.status(201).json({ message: "Başarıyla kayıt oluşturuldu", user });
-  }
-  catch (error) {
+  } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
@@ -96,8 +106,8 @@ const logout = async (req, res) => {
       await RefreshToken.deleteOne({ token: refreshToken });
     }
     // Clear cookies
-    res.clearCookie("accessToken",{path: "/api/"});
-    res.clearCookie("refreshToken",{path: "/api/"});
+    res.clearCookie("accessToken", { path: "/api/" });
+    res.clearCookie("refreshToken", { path: "/api/" });
 
     res.json({ message: "Logged out successfully" });
   } catch (error) {
@@ -140,10 +150,59 @@ const refreshTokens = async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 };
+const verifyEmail = async (req, res) => {
+  const { token } = req.query; // Linkten token'ı al (örn: /verify-email?token=abc)
+  if (!token) {
+    return res.status(400).send("Doğrulama token'ı bulunamadı.");
+  }
+  const redisKey = `verify_email:${token}`;
+  try {
+    // 1. Token Redis'te var mı diye bak
+    const userId = await redisClient.get(redisKey);
+
+    if (!userId) {
+      // Token Redis'te yoksa -> Geçersiz veya Süresi Dolmuş
+      console.log(`Verification attempt with invalid/expired token: ${token}`);
+      return res.status(400).send("Doğrulama linki geçersiz veya süresi dolmuş.");
+    }
+    // 2. Token geçerliyse -> Kullanıcıyı bul ve doğrula
+    console.log(`Token found in Redis for user ID: ${userId}`);
+    const user = await User.findById(userId);
+    if (!user) {
+      // Redis'te token var ama veritabanında kullanıcı yok (çok nadir bir durum)
+      console.error(`User not found for ID ${userId} during verification.`);
+      await redisClient.del(redisKey); // Redis'teki anahtarı temizle
+      return res.status(400).send("Kullanıcı bulunamadı.");
+    }
+
+    if (user.isVerified) {
+      // Kullanıcı zaten doğrulanmışsa
+      await redisClient.del(redisKey); // Token'ı yine de sil
+      return res.status(200).send("Hesabınız zaten doğrulanmış.");
+    }
+
+    // Kullanıcıyı doğrulanmış olarak işaretle
+    user.isVerified = true;
+    await user.save();
+    console.log(`User ${userId} verified successfully.`);
+
+    // 3. Token'ı Redis'ten Sil (Tek kullanımlık olmalı)
+    await redisClient.del(redisKey);
+    console.log(`Token deleted from Redis: ${redisKey}`);
+
+    // Kullanıcıyı başarılı sayfasına yönlendir veya mesaj göster
+    res.status(200).send("E-posta adresiniz başarıyla doğrulandı!");
+    
+  } catch (error) {
+    console.error('Verification Error:', error);
+    res.status(500).send('Doğrulama sırasında bir sunucu hatası oluştu.');
+  }
+};
 
 module.exports = {
   login,
   register,
   logout,
-  refreshTokens
+  refreshTokens,
+  verifyEmail,
 };

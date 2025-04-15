@@ -8,4 +8,5 @@ router.post("/register",auth.register);
 router.post("/logout",auth.logout);
 router.post("/refresh-token",verifyRefreshToken,auth.refreshTokens);
 
+router.get("/verify-email",auth.verifyEmail);
 module.exports=router;

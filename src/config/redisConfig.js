@@ -7,7 +7,7 @@ const redisClient = new Redis({
     // password: process.env.REDIS_PASSWORD,
 });
     
-redisClient.on('connect', () => console.log('Connected to Redis successfully!'));
-redisClient.on('error', (err) => console.error('Redis connection error:', err));
+redisClient.on('connect', () => console.log('Redise başarıyla bağlandı!'));
+redisClient.on('error', (err) => console.error('Redise bağlantı hatası:', err));
 
 module.exports = redisClient;
