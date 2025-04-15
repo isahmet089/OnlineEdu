@@ -2,13 +2,14 @@ const User = require("../models/User");
 const jwt = require("jsonwebtoken");
 const { accessToken, refreshToken } = require("../config/jwtConfig");
 const RefreshToken = require("../models/RefreshToken");
-const cookieParser = require("cookie-parser");
+
+
 
 const generateTokens = (user) => {
   const accessTokenPayload = {
     id: user._id,
     email: user.email,
-    role: user.role,
+    roles: user.roles,
   };
   const refreshTokenPayload = { id: user._id };
 
@@ -44,6 +45,7 @@ const login = async (req, res) => {
     res.cookie("accessToken", tokens.accessToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
+      path: "/api/",
       sameSite: "strict",
       maxAge: 15 * 60 * 1000, // 15 dakika
     });
@@ -51,8 +53,8 @@ const login = async (req, res) => {
     res.cookie("refreshToken", tokens.refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
+      path: "/api/",
       sameSite: "strict",
-      path: "/api/auth/refresh-token",
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 gün
     });
     console.log(req.user);
@@ -84,28 +86,24 @@ const register = async (req, res) => {
   }
 };
 const logout = async (req, res) => {
- 
   try {
     const refreshToken = req.cookies.refreshToken;
     console.log(refreshToken);
     if (refreshToken) {
-      RefreshToken.deleteOne({ token: refreshToken });
+      await RefreshToken.deleteOne({ token: refreshToken });
     }
-
     // Clear cookies
-    res.clearCookie("accessToken");
-    res.clearCookie("refreshToken", { path: "/api/auth/refresh-token" });
+    res.clearCookie("accessToken",{path: "/api/"});
+    res.clearCookie("refreshToken",{path: "/api/"});
 
     res.json({ message: "Logged out successfully" });
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    res.status(500).json({ message: error.message });
   }
 };
 const refreshTokens = async (req, res) => {
   try {
     const oldRefreshToken = req.body.refreshToken;
-    console.log(req.user);
-
     // Remove old refresh token
     await RefreshToken.deleteOne({ token: oldRefreshToken });
 

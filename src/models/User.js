@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
-
+const { ROLES } = require("../config/rolesAndPermissions.js"); // Roller için config dosyası
 const userSchema = new mongoose.Schema(
   {
     firstName: {
@@ -21,11 +21,13 @@ const userSchema = new mongoose.Schema(
       required: [true, "Şifre gereklidir"],
       minlength: 6,
     },
-    role: {
-      type: String,
-      enum: ["student", "instructor", "admin"],
-      default: "student",
-    },
+    roles: {
+      type: [{
+          type: String,
+          enum: Object.values(ROLES) // Geçerli roller config dosyasından alınır
+      }],
+      default: [ROLES.USER] // Varsayılan rol
+   },
     isVerified: {
       type: Boolean,
       default: false,
