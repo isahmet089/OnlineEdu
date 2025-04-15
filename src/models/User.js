@@ -26,7 +26,7 @@ const userSchema = new mongoose.Schema(
           type: String,
           enum: Object.values(ROLES) // Geçerli roller config dosyasından alınır
       }],
-      default: [ROLES.USER] // Varsayılan rol
+      default: [ROLES.STUDENT] // Varsayılan rol
    },
     isVerified: {
       type: Boolean,

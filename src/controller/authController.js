@@ -2,7 +2,7 @@ const User = require("../models/User");
 const jwt = require("jsonwebtoken");
 const { accessToken, refreshToken } = require("../config/jwtConfig");
 const RefreshToken = require("../models/RefreshToken");
-
+const EmailService = require("../utils/emailService");
 
 
 const generateTokens = (user) => {
@@ -79,6 +79,9 @@ const register = async (req, res) => {
       role,
     });
     await user.save();
+    // Kullanıcı kaydedildikten sonra hoş geldiniz e-postası gönder
+    await EmailService.sendWelcomeEmail(user);
+     
     res.status(201).json({ message: "Başarıyla kayıt oluşturuldu", user });
   }
   catch (error) {
