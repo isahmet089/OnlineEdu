@@ -58,7 +58,6 @@ const login = async (req, res) => {
       sameSite: "strict",
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 gün
     });
-    console.log(req.user);
     res.status(200).json({ message: "Giriş başarılı", user });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -134,6 +133,7 @@ const refreshTokens = async (req, res) => {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
+      path: "/api/",
       maxAge: 15 * 60 * 1000, // 15 minutes
     });
 
@@ -141,7 +141,7 @@ const refreshTokens = async (req, res) => {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
-      path: "/api/auth/refresh-token",
+      path: "/api/",
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 
@@ -198,6 +198,91 @@ const verifyEmail = async (req, res) => {
     res.status(500).send('Doğrulama sırasında bir sunucu hatası oluştu.');
   }
 };
+const resendVerificationEmail = async (req, res) => {
+  const user = req.user; // authenticate middleware ile alınmış kullanıcı
+  try {
+    if (user.isVerified) {
+      return res.status(400).json({ message: "Kullanıcı zaten doğrulanmış" });
+    }
+    // Doğrulama kodunu oluştur
+    const verificationToken = uuidv4();
+    const redisKey = `verify_email:${verificationToken}`;
+    const ttlInSeconds = 15 * 60; // 15 dakika
+    await redisClient.setex(redisKey, ttlInSeconds, user.id.toString()); // user.id objectId ise string'e çevir
+    console.log(
+      `Token stored in Redis for user ${user.id}: ${redisKey} with TTL ${ttlInSeconds}s`
+    );
+    // Doğrulama kodunu e-posta ile gönder
+    await EmailService.sendVerificationEmail(user, verificationToken);
+    res.status(200).json({ message: "Doğrulama e-postası gönderildi" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+}
+const forgotPassword = async (req, res) => {
+  const {email} =req.body;
+  try{
+    if (!email) throw new Error("Email gereklidir")
+    const user = await User.findOne({email});
+    if (!user) throw new Error("Kullanıcı bulunamadı");
+    // Şifre sıfırlama token'ı oluştur
+    const resetToken = uuidv4();
+    const redisKey = `reset_password:${resetToken}`;
+    const ttlInSeconds = 15 * 60; // 15 dakika
+    await redisClient.setex(redisKey, ttlInSeconds, user.id.toString()); // user.id objectId ise string'e çevir
+    console.log(
+      `Reset token stored in Redis for user ${user.id}: ${redisKey} with TTL ${ttlInSeconds}s`
+    );
+    // Şifre sıfırlama e-postası gönder
+    const resetPasswordUrl = `${process.env.FRONTEND_URL}/api/auth/reset-password?token=${resetToken}`;
+    await EmailService.sendResetPasswordEmail(user, resetPasswordUrl);
+    
+    res.status(200).json({message:"Şifre sıfırlama e-postası gönderildi"})
+  }catch(error){
+    res.status(500).json({message:error.message})
+  }
+};
+const resetPassword = async (req, res) => {
+  const {newPassword} = req.body;
+  const {token} = req.query; // Linkten token'ı al (örn: /reset-password?token=abc)
+  if (!newPassword) {
+    return res.status(400).json({message:"Yeni şifre gereklidir."});
+  }
+  if (!token) {
+    return res.status(400).json({message:"Şifre sıfırlama token'ı bulunamadı."});
+  }
+  const redisKey = `reset_password:${token}`;
+  try {
+    // 1. Token Redis'te var mı diye bak
+    const userId = await redisClient.get(redisKey);
+    console.log(userId);
+    if (!userId) {
+      // Token Redis'te yoksa -> Geçersiz veya Süresi Dolmuş
+      console.log(`Reset password attempt with invalid/expired token: ${token}`);
+      return res.status(400).json({message :"Şifre sıfırlama linki geçersiz veya süresi dolmuş."});
+    }
+    // 2. Token geçerliyse -> Kullanıcıyı bul ve şifreyi güncelle
+    console.log(`Token found in Redis for user ID: ${userId}`);
+    const user = await User.findById(userId);
+    if (!user) {
+      // Redis'te token var ama veritabanında kullanıcı yok (çok nadir bir durum)
+      console.error(`User not found for ID ${userId} during password reset.`);
+      await redisClient.del(redisKey); // Redis'teki anahtarı temizle
+      return res.status(400).json({message:"Kullanıcı bulunamadı."});
+    }
+    // Şifreyi güncelle 
+    user.password = newPassword;
+    await user.save();
+    console.log(`Password reset for user ${userId} successfully.`);
+    // 3. Token'ı Redis'ten Sil (Tek kullanımlık olmalı)
+    await redisClient.del(redisKey);
+    console.log(`Token deleted from Redis: ${redisKey}`); 
+    res.status(200).json({message:"Şifre sıfırlama işlemi başarılı.",user});
+    }catch (error) {
+    console.error('Password Reset Error:', error);
+    res.status(500).json({ message: error.message });
+  }
+};
 
 module.exports = {
   login,
@@ -205,4 +290,7 @@ module.exports = {
   logout,
   refreshTokens,
   verifyEmail,
+  resendVerificationEmail,
+  forgotPassword,
+  resetPassword,
 };

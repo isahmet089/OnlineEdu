@@ -1,6 +1,5 @@
 const { createTransporter } = require("../config/mailConfig");
 const welcomeEmailTemplate = require("./emailTemplates/welcome.js");
-const adminNotificationTemplate = require("./emailTemplates/adminNotification.js");
 
 
 class EmailService {
@@ -24,7 +23,6 @@ class EmailService {
       return { success: false, error: error.message };
     }
   }
-
   static async sendVerificationEmail(user,token){
     const verificationUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/api/auth/verify-email?token=${token}`;
     try {
@@ -48,31 +46,34 @@ class EmailService {
       return { success: false, error: error.message };
     }
   }
-
-  static async sendAdminNotification(user, adminEmail) {
-    try {
+  static async sendResetPasswordEmail(user, resetPasswordUrl){
+    
+    if(!resetPasswordUrl){
+      return { success: false, error: "Reset password token is not provided" };
+    }
+    try{
       const transporter = createTransporter();
-
       const mailOptions = {
-        from: `"Sistem Bildirimi" <${
-          process.env.MAIL_USER || "noreply@uygulama.com"
+        from: `"ONLINE-education-platform" <${
+          process.env.EPOSTA || "<tumeal@outlook.com.tr>"
         }>`,
-        to: adminEmail || process.env.ADMIN_EMAIL || "admin@uygulama.com",
-        subject: "Yeni Kullanıcı Kaydı Bildirimi",
-        html: adminNotificationTemplate(user),
+        to: user.email,
+        subject: "Şifre Sıfırlama Talebi",
+        html: `
+        <p>Merhaba ${user.firstName || ''},</p>
+        <p>Şifrenizi sıfırlamak için aşağıdaki bağlantıya tıklayın:</p>
+        <a href="${resetPasswordUrl}">${resetPasswordUrl}</a>`,
       };
-
       const info = await transporter.sendMail(mailOptions);
-      console.log("Admin bildirim e-postası gönderildi:", info.messageId);
+      console.log("Şifre sıfırlama e-postası gönderildi:", info.messageId);
       return { success: true, messageId: info.messageId };
-    } catch (error) {
-      console.error(
-        "Admin bildirim e-postası gönderilirken hata oluştu:",
-        error
-      );
+    }catch(error){
+      console.error("Şifre sıfırlama e-postası gönderilirken hata oluştu:", error);
       return { success: false, error: error.message };
     }
+    
   }
+
 }
 
 module.exports = EmailService;
