@@ -4,7 +4,6 @@ const userController = require('../controller/userController');
 const { authenticate, checkPermission } = require('../middleware/auth');
 const { PERMISSIONS } = require('../config/rolesAndPermissions');
 
-
 // tüm kullanıcıları listele
 router.get('/',
     authenticate,

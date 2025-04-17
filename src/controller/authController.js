@@ -27,16 +27,23 @@ const generateTokens = (user) => {
   return { accessToken: newAccessToken, refreshToken: newRefreshToken };
 };
 const login = async (req, res, next) => {
-  const { email, password } = req.body;
+  const { emailOrUserName, password } = req.body;
   try {
-    if (!email || !password)
+    if (!emailOrUserName || !password)
       throw new AppError(
         MESSAGES.EMAIL_OR_PASSWORD_REQUIRED,
         HTTP_CODES.BAD_REQUEST
       );
-    const user = await User.findOne({ email });
-    if (!user)
-      throw new AppError(MESSAGES.EMAIL_NOT_FOUND, HTTP_CODES.BAD_REQUEST);
+      console.log("Login request received:", req.body);
+    // Kullanıcı adı veya e-posta ile kullanıcıyı bul
+    const user = await User.findOne({
+      $or: [
+        { email: emailOrUserName },
+        { userName: emailOrUserName }
+      ]
+    });
+    console.log("User found:", user);
+    if (!user) throw new AppError(MESSAGES.EMAIL_NOT_FOUND, HTTP_CODES.BAD_REQUEST);
 
     const isMatch = await user.comparePassword(password);
     if (!isMatch)
@@ -76,13 +83,16 @@ const login = async (req, res, next) => {
 };
 const register = async (req, res, next) => {
   try {
-    const { firstName, lastName, email, password, role } = req.body;
+    const { userName, firstName, lastName, email, password, role } = req.body;
 
     // Gerekli alanlar
-    if (!firstName || !lastName || !email || !password) {
+    if (!firstName || !lastName || !email || !password || !userName) {
       throw new AppError(MESSAGES.MISSING_FIELDS, HTTP_CODES.BAD_REQUEST);
     }
-
+    // Kullanıcı adı daha önce kullanılmış mı kontrol et
+    const existingUserName = await User.findOne({ userName });
+    if (existingUserName)  throw new AppError(MESSAGES.USERNAME_ALREADY_EXISTS, HTTP_CODES.BAD_REQUEST);
+     
     // E-posta daha önce kullanılmış mı kontrol et
     const existingUser = await User.findOne({ email });
     if (existingUser) {
@@ -91,6 +101,7 @@ const register = async (req, res, next) => {
 
     // Yeni kullanıcı oluştur
     const user = new User({
+      userName,
       firstName,
       lastName,
       email,
@@ -250,9 +261,7 @@ const resendVerificationEmail = async (req, res, next) => {
 
     await EmailService.sendVerificationEmail(user, verificationToken);
 
-    res
-      .status(HTTP_CODES.OK)
-      .json({ message: MESSAGES.VERIFICATION_EMAIL_SENT });
+    res.status(HTTP_CODES.OK).json({ message: MESSAGES.EMAIL_VERIFICATION_SENT });
   } catch (error) {
     next(error);
   }

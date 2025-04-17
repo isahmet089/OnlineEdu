@@ -19,3 +19,34 @@
 {"level":"error","message":"Uygulama Hatası: Kullanıcı bulunamadı","timestamp":"2025-04-17T01:43:34.674Z"}
 {"level":"error","message":"Uygulama Hatası: E-posta adresi bulunamadı.","timestamp":"2025-04-17T02:49:45.051Z"}
 {"level":"error","message":"Uygulama Hatası: Şifreler eşleşmiyor.","timestamp":"2025-04-17T02:50:05.229Z"}
+{"level":"error","message":"Uygulama Hatası: Token gereklidir.","timestamp":"2025-04-17T20:42:06.257Z"}
+{"level":"error","message":"Uygulama Hatası: Token gereklidir.","timestamp":"2025-04-17T20:43:56.395Z"}
+{"level":"error","message":"Uygulama Hatası: E-posta adresi bulunamadı.","timestamp":"2025-04-17T20:56:52.312Z"}
+{"level":"error","message":"Uygulama Hatası: Token gereklidir.","timestamp":"2025-04-17T21:14:55.232Z"}
+{"level":"error","message":"Uygulama Hatası: Bu işlemi yapmak için yeterli izniniz yok.","timestamp":"2025-04-17T21:15:02.503Z"}
+{"level":"error","message":"Uygulama Hatası: E-posta adresi bulunamadı.","timestamp":"2025-04-17T21:15:23.624Z"}
+{"level":"error","message":"Beklenmeyen Hata: Expected ',' or '}' after property value in JSON at position 34 (line 3 column 5)","timestamp":"2025-04-17T21:15:54.442Z"}
+{"level":"error","message":"Uygulama Hatası: Bu e-posta adresi zaten kullanımda.","timestamp":"2025-04-17T21:16:20.067Z"}
+{"level":"error","message":"Uygulama Hatası: Sunucuda beklenmeyen bir hata oluştu","timestamp":"2025-04-17T21:16:40.385Z"}
+{"level":"error","message":"Uygulama Hatası: Sunucuda beklenmeyen bir hata oluştu","timestamp":"2025-04-17T21:16:54.649Z"}
+{"level":"error","message":"Uygulama Hatası: Bu kullanıcı adı zaten kullanımda.","timestamp":"2025-04-17T21:17:50.741Z"}
+{"level":"error","message":"Beklenmeyen Hata: email is not defined","timestamp":"2025-04-17T21:23:43.365Z"}
+{"level":"error","message":"Beklenmeyen Hata: email is not defined","timestamp":"2025-04-17T21:24:00.486Z"}
+{"level":"error","message":"Beklenmeyen Hata: email is not defined","timestamp":"2025-04-17T21:24:07.521Z"}
+{"level":"error","message":"Uygulama Hatası: E-posta adresi bulunamadı.","timestamp":"2025-04-17T21:24:56.396Z"}
+{"level":"error","message":"Uygulama Hatası: E-posta adresi bulunamadı.","timestamp":"2025-04-17T21:25:17.013Z"}
+{"level":"error","message":"Uygulama Hatası: E-posta adresi bulunamadı.","timestamp":"2025-04-17T21:25:20.187Z"}
+{"level":"error","message":"Uygulama Hatası: E-posta adresi bulunamadı.","timestamp":"2025-04-17T21:26:32.763Z"}
+{"level":"error","message":"Uygulama Hatası: E-posta adresi bulunamadı.","timestamp":"2025-04-17T21:27:12.245Z"}
+{"level":"error","message":"Uygulama Hatası: E-posta adresi bulunamadı.","timestamp":"2025-04-17T21:27:16.098Z"}
+{"level":"error","message":"Uygulama Hatası: E-posta adresi bulunamadı.","timestamp":"2025-04-17T21:27:30.135Z"}
+{"level":"error","message":"Uygulama Hatası: E-posta adresi bulunamadı.","timestamp":"2025-04-17T21:27:32.902Z"}
+{"level":"error","message":"Uygulama Hatası: E-posta adresi bulunamadı.","timestamp":"2025-04-17T21:27:34.789Z"}
+{"level":"error","message":"Uygulama Hatası: E-posta adresi bulunamadı.","timestamp":"2025-04-17T21:31:26.914Z"}
+{"level":"error","message":"Uygulama Hatası: E-posta adresi bulunamadı.","timestamp":"2025-04-17T21:31:42.874Z"}
+{"level":"error","message":"Uygulama Hatası: E-posta adresi bulunamadı.","timestamp":"2025-04-17T21:32:16.343Z"}
+{"level":"error","message":"Uygulama Hatası: E-posta adresi bulunamadı.","timestamp":"2025-04-17T21:32:56.463Z"}
+{"level":"error","message":"Uygulama Hatası: E-posta adresi bulunamadı.","timestamp":"2025-04-17T21:33:24.449Z"}
+{"level":"error","message":"Uygulama Hatası: E-posta adresi bulunamadı.","timestamp":"2025-04-17T21:36:22.957Z"}
+{"level":"error","message":"Uygulama Hatası: Bu işlemi yapmak için yeterli izniniz yok.","timestamp":"2025-04-17T21:38:20.259Z"}
+{"level":"error","message":"Uygulama Hatası: Token gereklidir.","timestamp":"2025-04-17T22:12:51.129Z"}

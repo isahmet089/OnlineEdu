@@ -1,8 +1,14 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 const { ROLES } = require("../config/rolesAndPermissions.js"); // Roller için config dosyası
+const slugify = require("slugify"); // Slug oluşturmak için
 const userSchema = new mongoose.Schema(
   {
+    userName: {
+      type: String,
+      required: [true, "Kullanıcı adı gereklidir"],
+      unique: true,
+    },
     firstName: {
       type: String,
       required: [true, "İsim gereklidir"],
@@ -26,15 +32,43 @@ const userSchema = new mongoose.Schema(
           type: String,
           enum: Object.values(ROLES) // Geçerli roller config dosyasından alınır
       }],
-      default: [ROLES.STUDENT] // Varsayılan rol
+      default: () => [ROLES.STUDENT] // Varsayılan rol
    },
     isVerified: {
       type: Boolean,
       default: false,
-    },  
+    },
+    slug: {
+      type: String,
+      unique: true,
+      lowercase: true,
+      trim: true,
+    },
   },
   { timestamps: true }
 );
+// Slug oluşturma fonksiyonu (benzersizlik kontrolü ile)
+async function generateUniqueSlug(model, slug) {
+  const existingUser = await model.findOne({ slug });
+  if (existingUser) {
+    const count = await model.countDocuments({ slug: { $regex: `^${slug}(?:-\\d+)?$` } });
+    return `${slug}-${count + 1}`;
+  }
+  return slug;
+}
+
+// Slug oluşturma middleware'i (kayıt veya userName güncellemesi sırasında)
+userSchema.pre("save", async function (next) {
+  if (this.isModified("userName") || !this.slug) {
+    try {
+      const baseSlug = slugify(this.userName, { lower: true, replacement: "-" });
+      this.slug = await generateUniqueSlug(this.model("User"), baseSlug);
+    } catch (error) {
+      return next(error);
+    }
+  }
+  next();
+});
 
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
@@ -56,5 +90,6 @@ userSchema.methods.comparePassword = async function (password) {
     return false;
   }
 };
+
 
 module.exports = mongoose.model("User", userSchema);

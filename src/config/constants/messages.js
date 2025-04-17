@@ -18,6 +18,7 @@ const MESSAGES = Object.freeze({
   INVALID_PASSWORD: "Şifre en az 6 karakter olmalıdır.",
   USER_NOT_FOUND: "Kullanıcı bulunamadı.",
   EMAIL_ALREADY_EXISTS: "Bu e-posta adresi zaten kullanımda.",
+  USERNAME_ALREADY_EXISTS: "Bu kullanıcı adı zaten kullanımda.",
   USER_ALREADY_VERIFIED: "Kullanıcı zaten doğrulanmış.",
   INVALID_CREDENTIALS: "E-posta veya şifre hatalı.",
   ACCOUNT_INACTIVE: "Hesabınız aktif değil.",
