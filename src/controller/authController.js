@@ -4,7 +4,9 @@ const { accessToken, refreshToken } = require("../config/jwtConfig");
 const RefreshToken = require("../models/RefreshToken");
 const EmailService = require("../utils/emailService");
 const { v4: uuidv4 } = require("uuid");
-const redisClient = require("../config/redisConfig"); // Redis istemciniz
+const redisClient = require("../config/redisConfig"); 
+const AppError = require("../utils/appError");
+const { HTTP_CODES, MESSAGES } = require("../config/constants");
 
 const generateTokens = (user) => {
   const accessTokenPayload = {
@@ -24,15 +26,24 @@ const generateTokens = (user) => {
 
   return { accessToken: newAccessToken, refreshToken: newRefreshToken };
 };
-const login = async (req, res) => {
+const login = async (req, res, next) => {
   const { email, password } = req.body;
   try {
-    if (!email || !password) throw new Error("Email veya şifre gereklidir");
+    if (!email || !password)
+      throw new AppError(
+        MESSAGES.EMAIL_OR_PASSWORD_REQUIRED,
+        HTTP_CODES.BAD_REQUEST
+      );
     const user = await User.findOne({ email });
-    if (!user) throw new Error("Kullanıcı bulunamadı");
+    if (!user)
+      throw new AppError(MESSAGES.EMAIL_NOT_FOUND, HTTP_CODES.BAD_REQUEST);
 
     const isMatch = await user.comparePassword(password);
-    if (!isMatch) throw new Error("Şifre yanlış");
+    if (!isMatch)
+      throw new AppError(
+        MESSAGES.PASSWORDS_DO_NOT_MATCH,
+        HTTP_CODES.BAD_REQUEST
+      );
     // Kullanıcının eski tüm refresh tokenlarını sil
     await RefreshToken.deleteMany({ userId: user._id });
     // Yeni tokenları oluştur
@@ -58,19 +69,27 @@ const login = async (req, res) => {
       sameSite: "strict",
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 gün
     });
-    res.status(200).json({ message: "Giriş başarılı", user });
+    res.status(HTTP_CODES.OK).json({ message: MESSAGES.LOGIN_SUCCESS, user });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    next(error);
   }
 };
-const register = async (req, res) => {
-  const { firstName, lastName, email, password, role } = req.body;
+const register = async (req, res, next) => {
   try {
+    const { firstName, lastName, email, password, role } = req.body;
+
+    // Gerekli alanlar
     if (!firstName || !lastName || !email || !password) {
-      throw new Error("Tüm alanlar gereklidir");
+      throw new AppError(MESSAGES.MISSING_FIELDS, HTTP_CODES.BAD_REQUEST);
     }
+
+    // E-posta daha önce kullanılmış mı kontrol et
     const existingUser = await User.findOne({ email });
-    if (existingUser) throw new Error("Bu e-posta adresi zaten kullanılıyor");
+    if (existingUser) {
+      throw new AppError(MESSAGES.EMAIL_ALREADY_EXISTS, HTTP_CODES.BAD_REQUEST);
+    }
+
+    // Yeni kullanıcı oluştur
     const user = new User({
       firstName,
       lastName,
@@ -78,189 +97,227 @@ const register = async (req, res) => {
       password,
       role,
     });
+
     await user.save();
-    // Kullanıcı kaydedildikten sonra hoş geldiniz e-postası gönder
+
+    // Hoş geldin e-postası gönder
     await EmailService.sendWelcomeEmail(user);
-    // doğrulama kodu oluştur
+
+    // E-posta doğrulama token'ı oluştur
     const verificationToken = uuidv4();
     const redisKey = `verify_email:${verificationToken}`;
     const ttlInSeconds = 15 * 60; // 15 dakika
-    await redisClient.setex(redisKey, ttlInSeconds, user.id.toString()); // user.id objectId ise string'e çevir
+
+    await redisClient.setex(redisKey, ttlInSeconds, user.id.toString());
+
     console.log(
-      `Token stored in Redis for user ${user.id}: ${redisKey} with TTL ${ttlInSeconds}s`
+      `Redis: ${redisKey} set for user ${user.id} with TTL ${ttlInSeconds}s`
     );
-    // doğrulama kodunu e-posta ile gönder
+
+    // Doğrulama e-postasını gönder
     await EmailService.sendVerificationEmail(user, verificationToken);
 
-    res.status(201).json({ message: "Başarıyla kayıt oluşturuldu", user });
+    // Yanıt gönder
+    res.status(HTTP_CODES.CREATED).json({
+      message: MESSAGES.REGISTRATION_SUCCESS,
+      user,
+    });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    next(error); // Middleware zinciri için gerekli
   }
 };
-const logout = async (req, res) => {
+const logout = async (req, res, next) => {
   try {
     const refreshToken = req.cookies.refreshToken;
-    console.log(refreshToken);
+
     if (refreshToken) {
       await RefreshToken.deleteOne({ token: refreshToken });
     }
-    // Clear cookies
+
+    // Çerezleri temizle
     res.clearCookie("accessToken", { path: "/api/" });
     res.clearCookie("refreshToken", { path: "/api/" });
 
-    res.json({ message: "Logged out successfully" });
+    res.status(HTTP_CODES.OK).json({ message: MESSAGES.LOGOUT_SUCCESS });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    next(error);
   }
 };
-const refreshTokens = async (req, res) => {
+const refreshTokens = async (req, res, next) => {
   try {
     const oldRefreshToken = req.body.refreshToken;
-    // Remove old refresh token
+
+    if (!oldRefreshToken) {
+      throw new AppError(MESSAGES.TOKEN_REQUIRED, HTTP_CODES.BAD_REQUEST);
+    }
+
+    // Eski refresh token'ı sil
     await RefreshToken.deleteOne({ token: oldRefreshToken });
 
-    // Generate new tokens
+    // Yeni token üret
     const tokens = generateTokens(req.user);
 
-    // Save new refresh token
+    // Yeni refresh token'ı veritabanına kaydet
     await RefreshToken.create({
       userId: req.user.id,
       token: tokens.refreshToken,
     });
 
-    // Set cookies
+    const isProduction = process.env.NODE_ENV === "production";
+
+    // Çerezlere token'ları ekle
     res.cookie("accessToken", tokens.accessToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: isProduction,
       sameSite: "strict",
       path: "/api/",
-      maxAge: 15 * 60 * 1000, // 15 minutes
+      maxAge: 15 * 60 * 1000, // 15 dakika
     });
 
     res.cookie("refreshToken", tokens.refreshToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: isProduction,
       sameSite: "strict",
       path: "/api/",
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 gün
     });
 
-    res.json({ message: "Tokens refreshed" });
+    res.status(HTTP_CODES.OK).json({ message: MESSAGES.TOKEN_REFRESHED });
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    next(error);
   }
 };
-const verifyEmail = async (req, res) => {
-  const { token } = req.query; // Linkten token'ı al (örn: /verify-email?token=abc)
+const verifyEmail = async (req, res, next) => {
+  const { token } = req.query;
+
   if (!token) {
-    return res.status(400).send("Doğrulama token'ı bulunamadı.");
+    throw new AppError(MESSAGES.TOKEN_REQUIRED, HTTP_CODES.BAD_REQUEST);
   }
+
   const redisKey = `verify_email:${token}`;
+
   try {
-    // 1. Token Redis'te var mı diye bak
     const userId = await redisClient.get(redisKey);
+    console.log(`Verification token found for user ID: ${userId}`);
 
     if (!userId) {
-      // Token Redis'te yoksa -> Geçersiz veya Süresi Dolmuş
-      console.log(`Verification attempt with invalid/expired token: ${token}`);
-      return res.status(400).send("Doğrulama linki geçersiz veya süresi dolmuş.");
+      console.log(`Invalid or expired token: ${token}`);
+      throw new AppError(MESSAGES.INVALID_TOKEN, HTTP_CODES.BAD_REQUEST);
     }
-    // 2. Token geçerliyse -> Kullanıcıyı bul ve doğrula
-    console.log(`Token found in Redis for user ID: ${userId}`);
+
     const user = await User.findById(userId);
     if (!user) {
-      // Redis'te token var ama veritabanında kullanıcı yok (çok nadir bir durum)
-      console.error(`User not found for ID ${userId} during verification.`);
-      await redisClient.del(redisKey); // Redis'teki anahtarı temizle
-      return res.status(400).send("Kullanıcı bulunamadı.");
+      console.error(
+        `User not found for ID ${userId} during email verification.`
+      );
+      await redisClient.del(redisKey);
+      throw new AppError(MESSAGES.USER_NOT_FOUND, HTTP_CODES.BAD_REQUEST);
     }
 
     if (user.isVerified) {
-      // Kullanıcı zaten doğrulanmışsa
-      await redisClient.del(redisKey); // Token'ı yine de sil
-      return res.status(200).send("Hesabınız zaten doğrulanmış.");
+      await redisClient.del(redisKey);
+      console.log(`User ${userId} is already verified.`);
+      return res.status(HTTP_CODES.OK).send(MESSAGES.USER_ALREADY_VERIFIED);
     }
 
-    // Kullanıcıyı doğrulanmış olarak işaretle
     user.isVerified = true;
     await user.save();
-    console.log(`User ${userId} verified successfully.`);
-
-    // 3. Token'ı Redis'ten Sil (Tek kullanımlık olmalı)
     await redisClient.del(redisKey);
-    console.log(`Token deleted from Redis: ${redisKey}`);
+    console.log(`Email verified for user ${userId} successfully.`);
 
-    // Kullanıcıyı başarılı sayfasına yönlendir veya mesaj göster
-    res.status(200).send("E-posta adresiniz başarıyla doğrulandı!");
-    
+    res.status(HTTP_CODES.OK).send(MESSAGES.EMAIL_VERIFIED);
   } catch (error) {
-    console.error('Verification Error:', error);
-    res.status(500).send('Doğrulama sırasında bir sunucu hatası oluştu.');
+    console.error("Email Verification Error:", error);
+    next(error);
   }
 };
-const resendVerificationEmail = async (req, res) => {
-  const user = req.user; // authenticate middleware ile alınmış kullanıcı
+const resendVerificationEmail = async (req, res, next) => {
+  const user = req.user;
+
   try {
     if (user.isVerified) {
-      return res.status(400).json({ message: "Kullanıcı zaten doğrulanmış" });
+      throw new AppError(
+        MESSAGES.USER_ALREADY_VERIFIED,
+        HTTP_CODES.BAD_REQUEST
+      );
     }
-    // Doğrulama kodunu oluştur
+
     const verificationToken = uuidv4();
     const redisKey = `verify_email:${verificationToken}`;
-    const ttlInSeconds = 15 * 60; // 15 dakika
-    await redisClient.setex(redisKey, ttlInSeconds, user.id.toString()); // user.id objectId ise string'e çevir
-    console.log(
-      `Token stored in Redis for user ${user.id}: ${redisKey} with TTL ${ttlInSeconds}s`
-    );
-    // Doğrulama kodunu e-posta ile gönder
+    const ttlInSeconds = 15 * 60;
+
+    await redisClient.setex(redisKey, ttlInSeconds, user.id.toString());
+
     await EmailService.sendVerificationEmail(user, verificationToken);
-    res.status(200).json({ message: "Doğrulama e-postası gönderildi" });
+
+    res
+      .status(HTTP_CODES.OK)
+      .json({ message: MESSAGES.VERIFICATION_EMAIL_SENT });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    next(error);
   }
-}
-const forgotPassword = async (req, res) => {
-  const {email} =req.body;
-  try{
-    if (!email) throw new Error("Email gereklidir")
-    const user = await User.findOne({email});
-    if (!user) throw new Error("Kullanıcı bulunamadı");
-    // Şifre sıfırlama token'ı oluştur
+};
+const forgotPassword = async (req, res, next) => {
+  const { email } = req.body;
+
+  try {
+    if (!email) {
+      throw new AppError(MESSAGES.EMAIL_REQUIRED, HTTP_CODES.BAD_REQUEST);
+    }
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      throw new AppError(MESSAGES.USER_NOT_FOUND, HTTP_CODES.BAD_REQUEST);
+    }
+
     const resetToken = uuidv4();
     const redisKey = `reset_password:${resetToken}`;
-    const ttlInSeconds = 15 * 60; // 15 dakika
-    await redisClient.setex(redisKey, ttlInSeconds, user.id.toString()); // user.id objectId ise string'e çevir
+    const ttlInSeconds = 15 * 60;
+
+    await redisClient.setex(redisKey, ttlInSeconds, user.id.toString());
+
     console.log(
       `Reset token stored in Redis for user ${user.id}: ${redisKey} with TTL ${ttlInSeconds}s`
     );
-    // Şifre sıfırlama e-postası gönder
-    const resetPasswordUrl = `${process.env.FRONTEND_URL}/api/auth/reset-password?token=${resetToken}`;
+
+    const resetPasswordUrl = `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}`;
     await EmailService.sendResetPasswordEmail(user, resetPasswordUrl);
-    
-    res.status(200).json({message:"Şifre sıfırlama e-postası gönderildi"})
-  }catch(error){
-    res.status(500).json({message:error.message})
+
+    console.log(`Reset password email sent to ${user.email}`);
+
+    res.status(HTTP_CODES.OK).json({
+      message: MESSAGES.PASSWORD_RESET_EMAIL_SENT,
+    });
+  } catch (error) {
+    next(error);
   }
 };
-const resetPassword = async (req, res) => {
-  const {newPassword} = req.body;
-  const {token} = req.query; // Linkten token'ı al (örn: /reset-password?token=abc)
+const resetPassword = async (req, res, next) => {
+  const { newPassword } = req.body;
+  const { token } = req.query; // Linkten token'ı al (örn: /reset-password?token=abc)
+
   if (!newPassword) {
-    return res.status(400).json({message:"Yeni şifre gereklidir."});
+    throw new AppError(MESSAGES.PASSWORD_REQUIRED, HTTP_CODES.BAD_REQUEST);
   }
+
   if (!token) {
-    return res.status(400).json({message:"Şifre sıfırlama token'ı bulunamadı."});
+    throw new AppError(MESSAGES.INVALID_RESET_TOKEN, HTTP_CODES.BAD_REQUEST);
   }
+
   const redisKey = `reset_password:${token}`;
+
   try {
     // 1. Token Redis'te var mı diye bak
     const userId = await redisClient.get(redisKey);
-    console.log(userId);
+    console.log(`Reset password token found for user ID: ${userId}`);
+
     if (!userId) {
-      // Token Redis'te yoksa -> Geçersiz veya Süresi Dolmuş
-      console.log(`Reset password attempt with invalid/expired token: ${token}`);
-      return res.status(400).json({message :"Şifre sıfırlama linki geçersiz veya süresi dolmuş."});
+      console.log(
+        `Reset password attempt with invalid/expired token: ${token}`
+      );
+      throw new AppError(MESSAGES.INVALID_RESET_TOKEN, HTTP_CODES.BAD_REQUEST);
     }
+
     // 2. Token geçerliyse -> Kullanıcıyı bul ve şifreyi güncelle
     console.log(`Token found in Redis for user ID: ${userId}`);
     const user = await User.findById(userId);
@@ -268,19 +325,24 @@ const resetPassword = async (req, res) => {
       // Redis'te token var ama veritabanında kullanıcı yok (çok nadir bir durum)
       console.error(`User not found for ID ${userId} during password reset.`);
       await redisClient.del(redisKey); // Redis'teki anahtarı temizle
-      return res.status(400).json({message:"Kullanıcı bulunamadı."});
+      throw new AppError(MESSAGES.USER_NOT_FOUND, HTTP_CODES.BAD_REQUEST);
     }
-    // Şifreyi güncelle 
+
+    // Şifreyi güncelle
     user.password = newPassword;
     await user.save();
     console.log(`Password reset for user ${userId} successfully.`);
+
     // 3. Token'ı Redis'ten Sil (Tek kullanımlık olmalı)
     await redisClient.del(redisKey);
-    console.log(`Token deleted from Redis: ${redisKey}`); 
-    res.status(200).json({message:"Şifre sıfırlama işlemi başarılı.",user});
-    }catch (error) {
-    console.error('Password Reset Error:', error);
-    res.status(500).json({ message: error.message });
+    console.log(`Token deleted from Redis: ${redisKey}`);
+
+    res
+      .status(HTTP_CODES.CREATED)
+      .json({ message: MESSAGES.PASSWORD_RESET_SUCCESS, user });
+  } catch (error) {
+    console.error("Password Reset Error:", error);
+    next(error); // Hata durumunda middleware'e geç
   }
 };
 

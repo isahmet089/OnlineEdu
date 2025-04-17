@@ -4,6 +4,7 @@ const cors = require('cors');
 const corsOptions = require('./config/corsConfig');
 const morgan = require('morgan');
 const cookieParser = require('cookie-parser');
+const  errorHandler  = require('./middleware/errorHandler');
 
 // Middleware
 app.use(cors(corsOptions));
@@ -20,4 +21,6 @@ const authRoutes = require('./routes/authRoutes');
 app.use('/api/users', userRoutes);
 app.use('/api/auth', authRoutes);
 
+// Error handling middleware
+app.use(errorHandler);
 module.exports = app;

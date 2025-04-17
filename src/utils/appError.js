@@ -1,11 +1,10 @@
-class CustomError extends Error {
-
-  constructor (code, message, description) {
-      super(`{"code": ${code}, "message": "${message}", "description": "${description}"}`);
-      this.code = code;
-      this.message = message;
-      this.description = description;
+class AppError extends Error {
+  constructor(message, statusCode) {
+    super(message);
+    this.statusCode = statusCode;
+    this.name = this.constructor.name;
+    Error.captureStackTrace(this, this.constructor);
   }
-
 }
-module.exports = CustomError;
+
+module.exports = AppError;
