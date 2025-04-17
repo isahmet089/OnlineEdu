@@ -302,10 +302,10 @@ const forgotPassword = async (req, res, next) => {
   }
 };
 const resetPassword = async (req, res, next) => {
-  const { newPassword } = req.body;
+  const { password } = req.body; // Yeni şifre
   const { token } = req.query; // Linkten token'ı al (örn: /reset-password?token=abc)
 
-  if (!newPassword) {
+  if (!password) {
     throw new AppError(MESSAGES.PASSWORD_REQUIRED, HTTP_CODES.BAD_REQUEST);
   }
 
@@ -338,7 +338,7 @@ const resetPassword = async (req, res, next) => {
     }
 
     // Şifreyi güncelle
-    user.password = newPassword;
+    user.password = password;
     await user.save();
     console.log(`Password reset for user ${userId} successfully.`);
 
