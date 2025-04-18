@@ -34,7 +34,7 @@ const login = async (req, res, next) => {
         MESSAGES.EMAIL_OR_PASSWORD_REQUIRED,
         HTTP_CODES.BAD_REQUEST
       );
-      console.log("Login request received:", req.body);
+      
     // Kullanıcı adı veya e-posta ile kullanıcıyı bul
     const user = await User.findOne({
       $or: [
@@ -42,7 +42,7 @@ const login = async (req, res, next) => {
         { userName: emailOrUserName }
       ]
     });
-    console.log("User found:", user);
+    // Kullanıcı bulunamazsa hata fırlat
     if (!user) throw new AppError(MESSAGES.EMAIL_NOT_FOUND, HTTP_CODES.BAD_REQUEST);
 
     const isMatch = await user.comparePassword(password);

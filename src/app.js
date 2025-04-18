@@ -4,16 +4,18 @@ const cors = require('cors');
 const corsOptions = require('./config/corsConfig');
 const morgan = require('morgan');
 const cookieParser = require('cookie-parser');
-const  errorHandler  = require('./middleware/errorHandler');
+const errorHandler  = require('./middleware/errorHandler');
 const securityMiddleware = require('./middleware/security');
+
+// Security middleware
+securityMiddleware(app);
+
 // Middleware
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use(morgan('dev'));
 app.use(cookieParser());
 
-// Security middleware
-securityMiddleware(app);
 
 // Routes requirements
 const userRoutes = require('./routes/userRoutes');
