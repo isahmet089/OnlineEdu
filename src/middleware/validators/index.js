@@ -50,6 +50,7 @@ module.exports = {
   validateForgotPassword,
   validateResetPassword,
 
+  
   validateCategoryCreate,
   updateCategoryValidation,
 };
