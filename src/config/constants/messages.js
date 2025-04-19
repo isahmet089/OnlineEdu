@@ -79,6 +79,17 @@ const MESSAGES = Object.freeze({
 
   // Diğer mesajlar
   INTERNAL_SERVER_ERROR: "İç sunucu hatası.",
+
+
+  // Course işlemleri
+  COURSE_NOT_FOUND: "Kurs bulunamadı.",
+
+  // Category işlemleri
+  CATEGORY_NOT_FOUND: "Kategori bulunamadı.",
+
+  
+  //Instructor işlemleri
+  INSTRUCTOR_NOT_FOUND: "Eğitmen bulunamadı.",
 });
 
 module.exports = MESSAGES;

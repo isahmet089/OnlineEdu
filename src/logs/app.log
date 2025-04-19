@@ -135,3 +135,13 @@
 {"level":"warn","message":"Uygulama Hatası: Kategori bulunamadı.","meta":{"ip":"::1","method":"GET","url":"/api/categories/node-jsx"},"statusCode":404,"timestamp":"2025-04-19T13:11:09.040Z"}
 {"level":"warn","message":"Uygulama Hatası: Kategori bulunamadı.","meta":{"ip":"::1","method":"GET","url":"/api/categories/node-jsx"},"statusCode":404,"timestamp":"2025-04-19T13:12:08.890Z"}
 {"level":"warn","message":"Uygulama Hatası: Kategori bulunamadı.","meta":{"ip":"::1","method":"GET","url":"/api/categories/node-jsx"},"statusCode":404,"timestamp":"2025-04-19T13:12:12.715Z"}
+{"level":"error","message":"Beklenmeyen Hata: Course validation failed: level: `Orta` is not a valid enum value for path `level`.","meta":{"ip":"::1","method":"POST","url":"/api/courses/"},"statusCode":500,"timestamp":"2025-04-19T13:52:54.211Z"}
+{"level":"error","message":"Beklenmeyen Hata: Schema hasn't been registered for model \"Lesson\".\nUse mongoose.model(name, schema)","meta":{"ip":"::1","method":"GET","url":"/api/courses/react-ile-modern-web-gelistirme"},"statusCode":500,"timestamp":"2025-04-19T14:34:36.946Z"}
+{"level":"warn","message":"Uygulama Hatası: Token gereklidir.","meta":{"ip":"::1","method":"GET","url":"/api/users/"},"statusCode":403,"timestamp":"2025-04-19T15:00:07.051Z"}
+{"level":"warn","message":"Uygulama Hatası: Eksik alanlar var.","meta":{"ip":"::1","method":"GET","url":"/api/courses/instructor/admin"},"statusCode":400,"timestamp":"2025-04-19T15:04:05.241Z"}
+{"level":"warn","message":"Uygulama Hatası: Kurs bulunamadı.","meta":{"ip":"::1","method":"PUT","url":"/api/courses/react-ile-modern-web-gelistirme"},"statusCode":404,"timestamp":"2025-04-19T15:46:28.722Z"}
+{"level":"error","message":"Beklenmeyen Hata: createCourseFolder is not a function","meta":{"ip":"::1","method":"POST","url":"/api/courses/"},"statusCode":500,"timestamp":"2025-04-19T15:46:41.357Z"}
+{"level":"error","message":"Beklenmeyen Hata: createCourseFolder is not a function","meta":{"ip":"::1","method":"POST","url":"/api/courses/"},"statusCode":500,"timestamp":"2025-04-19T15:47:54.313Z"}
+{"level":"error","message":"Beklenmeyen Hata: createCourseFolder is not a function","meta":{"ip":"::1","method":"POST","url":"/api/courses/"},"statusCode":500,"timestamp":"2025-04-19T15:48:13.185Z"}
+{"level":"error","message":"Beklenmeyen Hata: createCourseFolder is not a function","meta":{"ip":"::1","method":"POST","url":"/api/courses/"},"statusCode":500,"timestamp":"2025-04-19T15:49:19.538Z"}
+{"level":"error","message":"Beklenmeyen Hata: FileService.createCourseFolder is not a function","meta":{"ip":"::1","method":"POST","url":"/api/courses/"},"statusCode":500,"timestamp":"2025-04-19T15:50:12.139Z"}
