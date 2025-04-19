@@ -6,3 +6,44 @@
 {"level":"warn","message":"Uygulama Hatası: E-posta adresi bulunamadı.","meta":{"ip":"::1","method":"POST","url":"/api/auth/login"},"statusCode":400,"timestamp":"2025-04-18T01:01:15.870Z"}
 {"level":"warn","message":"Uygulama Hatası: E-posta adresi bulunamadı.","meta":{"ip":"::1","method":"POST","url":"/api/auth/login"},"statusCode":400,"timestamp":"2025-04-18T01:01:19.467Z"}
 {"level":"warn","message":"Uygulama Hatası: E-posta adresi bulunamadı.","meta":{"ip":"::1","method":"POST","url":"/api/auth/login"},"statusCode":400,"timestamp":"2025-04-18T01:01:28.075Z"}
+{"level":"error","message":"Beklenmeyen Hata: Categoy is not defined","meta":{"ip":"::1","method":"GET","url":"/api/categories/"},"statusCode":500,"timestamp":"2025-04-19T06:32:56.102Z"}
+{"level":"error","message":"Beklenmeyen Hata: category.save is not a function","meta":{"ip":"::1","method":"PUT","url":"/api/categories/node-js"},"statusCode":500,"timestamp":"2025-04-19T06:54:20.590Z"}
+{"level":"error","message":"Beklenmeyen Hata: category.save is not a function","meta":{"ip":"::1","method":"PUT","url":"/api/categories/node-js"},"statusCode":500,"timestamp":"2025-04-19T06:57:18.124Z"}
+{"level":"warn","message":"Beklenmeyen Hata: Unexpected end of JSON input","meta":{"ip":"::1","method":"GET","url":"/api/categories/node-js"},"statusCode":400,"timestamp":"2025-04-19T07:11:57.644Z"}
+{"level":"warn","message":"Beklenmeyen Hata: Unexpected end of JSON input","meta":{"ip":"::1","method":"GET","url":"/api/categories/express-js"},"statusCode":400,"timestamp":"2025-04-19T07:13:29.416Z"}
+{"level":"warn","message":"Beklenmeyen Hata: Unexpected end of JSON input","meta":{"ip":"::1","method":"GET","url":"/api/categories/express-js"},"statusCode":400,"timestamp":"2025-04-19T07:14:13.740Z"}
+{"level":"warn","message":"Beklenmeyen Hata: Unexpected end of JSON input","meta":{"ip":"::1","method":"GET","url":"/api/categories/express-js"},"statusCode":400,"timestamp":"2025-04-19T07:14:23.865Z"}
+{"level":"warn","message":"Beklenmeyen Hata: Unexpected end of JSON input","meta":{"ip":"::1","method":"GET","url":"/api/categories/express-js"},"statusCode":400,"timestamp":"2025-04-19T07:14:35.316Z"}
+{"level":"warn","message":"Beklenmeyen Hata: Unexpected end of JSON input","meta":{"ip":"::1","method":"GET","url":"/api/categories/express-js"},"statusCode":400,"timestamp":"2025-04-19T07:16:47.989Z"}
+{"level":"warn","message":"Beklenmeyen Hata: Unexpected end of JSON input","meta":{"ip":"::1","method":"GET","url":"/api/categories/express-js"},"statusCode":400,"timestamp":"2025-04-19T07:22:37.798Z"}
+{"level":"warn","message":"Beklenmeyen Hata: Unexpected end of JSON input","meta":{"ip":"::1","method":"GET","url":"/api/categories/express-js"},"statusCode":400,"timestamp":"2025-04-19T07:22:49.890Z"}
+{"level":"warn","message":"Beklenmeyen Hata: Unexpected end of JSON input","meta":{"ip":"::1","method":"GET","url":"/api/categories/express-js"},"statusCode":400,"timestamp":"2025-04-19T07:22:53.909Z"}
+{"level":"warn","message":"Beklenmeyen Hata: Unexpected end of JSON input","meta":{"ip":"::1","method":"GET","url":"/api/categories/express-js"},"statusCode":400,"timestamp":"2025-04-19T07:23:16.016Z"}
+{"level":"warn","message":"Beklenmeyen Hata: Unexpected end of JSON input","meta":{"ip":"::1","method":"GET","url":"/api/categories/express-js"},"statusCode":400,"timestamp":"2025-04-19T07:23:28.466Z"}
+{"level":"warn","message":"Beklenmeyen Hata: Unexpected end of JSON input","meta":{"ip":"::1","method":"GET","url":"/api/categories/express-js"},"statusCode":400,"timestamp":"2025-04-19T07:24:10.300Z"}
+{"level":"warn","message":"Beklenmeyen Hata: Unexpected end of JSON input","meta":{"ip":"::1","method":"GET","url":"/api/categories/express-jsddd"},"statusCode":400,"timestamp":"2025-04-19T07:26:24.302Z"}
+{"level":"warn","message":"Beklenmeyen Hata: Unexpected end of JSON input","meta":{"ip":"::1","method":"GET","url":"/api/categories/express-jsddd"},"statusCode":400,"timestamp":"2025-04-19T07:26:43.537Z"}
+{"level":"warn","message":"Beklenmeyen Hata: Unexpected end of JSON input","meta":{"ip":"::1","method":"GET","url":"/api/categories/express-jsddd"},"statusCode":400,"timestamp":"2025-04-19T07:27:28.772Z"}
+{"level":"warn","message":"Beklenmeyen Hata: Unexpected end of JSON input","meta":{"ip":"::1","method":"GET","url":"/api/categories/express"},"statusCode":400,"timestamp":"2025-04-19T07:28:21.611Z"}
+{"level":"warn","message":"Beklenmeyen Hata: Unexpected end of JSON input","meta":{"ip":"::1","method":"GET","url":"/api/categories/express"},"statusCode":400,"timestamp":"2025-04-19T07:30:10.778Z"}
+{"level":"warn","message":"Beklenmeyen Hata: Unexpected end of JSON input","meta":{"ip":"::1","method":"GET","url":"/api/categories/express"},"statusCode":400,"timestamp":"2025-04-19T07:31:43.998Z"}
+{"level":"warn","message":"Beklenmeyen Hata: Unexpected end of JSON input","meta":{"ip":"::1","method":"GET","url":"/api/categories/express"},"statusCode":400,"timestamp":"2025-04-19T07:33:37.007Z"}
+{"level":"warn","message":"Beklenmeyen Hata: Unexpected end of JSON input","meta":{"ip":"::1","method":"GET","url":"/api/categories/express"},"statusCode":400,"timestamp":"2025-04-19T07:33:54.505Z"}
+{"level":"error","message":"Beklenmeyen Hata: Cannot read properties of null (reading 'length')","meta":{"ip":"::1","method":"DELETE","url":"/api/categories/node-jsasfdsaf"},"statusCode":500,"timestamp":"2025-04-19T07:41:22.189Z"}
+{"level":"error","message":"Beklenmeyen Hata: Cannot read properties of null (reading 'length')","meta":{"ip":"::1","method":"DELETE","url":"/api/categories/node-jsasfdsaf"},"statusCode":500,"timestamp":"2025-04-19T07:41:43.219Z"}
+{"level":"error","message":"Beklenmeyen Hata: Cannot read properties of null (reading 'length')","meta":{"ip":"::1","method":"DELETE","url":"/api/categories/node-jsasfdsaf"},"statusCode":500,"timestamp":"2025-04-19T07:42:32.683Z"}
+{"level":"error","message":"Beklenmeyen Hata: Cannot read properties of null (reading 'slug')","meta":{"ip":"::1","method":"DELETE","url":"/api/categories/node-jsasfdsaf"},"statusCode":500,"timestamp":"2025-04-19T07:43:43.698Z"}
+{"level":"error","message":"Beklenmeyen Hata: Cannot read properties of null (reading 'length')","meta":{"ip":"::1","method":"DELETE","url":"/api/categories/node-jsasfdsaf"},"statusCode":500,"timestamp":"2025-04-19T07:48:56.249Z"}
+{"level":"warn","message":"Uygulama Hatası: Kategori bulunamadı.","meta":{"ip":"::1","method":"DELETE","url":"/api/categories/node-jsasfdsaf"},"statusCode":404,"timestamp":"2025-04-19T07:49:21.756Z"}
+{"level":"warn","message":"Uygulama Hatası: Kategori bulunamadı.","meta":{"ip":"::1","method":"DELETE","url":"/api/categories/node-jsasfdsaf"},"statusCode":404,"timestamp":"2025-04-19T07:49:25.558Z"}
+{"level":"warn","message":"Uygulama Hatası: Kategori bulunamadı.","meta":{"ip":"::1","method":"GET","url":"/api/categories/express"},"statusCode":404,"timestamp":"2025-04-19T07:51:31.042Z"}
+{"level":"warn","message":"Uygulama Hatası: Token gereklidir.","meta":{"ip":"::1","method":"PUT","url":"/api/categories/expressdd-js"},"statusCode":403,"timestamp":"2025-04-19T13:04:13.408Z"}
+{"level":"warn","message":"Uygulama Hatası: Kategori bulunamadı.","meta":{"ip":"::1","method":"PUT","url":"/api/categories/express-js"},"statusCode":404,"timestamp":"2025-04-19T13:06:50.269Z"}
+{"level":"warn","message":"Uygulama Hatası: Kategori bulunamadı.","meta":{"ip":"::1","method":"PUT","url":"/api/categories/express-js"},"statusCode":404,"timestamp":"2025-04-19T13:08:12.839Z"}
+{"level":"warn","message":"Uygulama Hatası: Kategori bulunamadı.","meta":{"ip":"::1","method":"GET","url":"/api/categories/node-jsx"},"statusCode":404,"timestamp":"2025-04-19T13:09:09.834Z"}
+{"level":"warn","message":"Uygulama Hatası: Kategori bulunamadı.","meta":{"ip":"::1","method":"GET","url":"/api/categories/node-jsx"},"statusCode":404,"timestamp":"2025-04-19T13:09:22.709Z"}
+{"level":"warn","message":"Uygulama Hatası: Kategori bulunamadı.","meta":{"ip":"::1","method":"GET","url":"/api/categories/node-jsx"},"statusCode":404,"timestamp":"2025-04-19T13:09:48.585Z"}
+{"level":"warn","message":"Uygulama Hatası: Kategori bulunamadı.","meta":{"ip":"::1","method":"GET","url":"/api/categories/node-jsx"},"statusCode":404,"timestamp":"2025-04-19T13:10:27.310Z"}
+{"level":"warn","message":"Uygulama Hatası: Kategori bulunamadı.","meta":{"ip":"::1","method":"GET","url":"/api/categories/node-jsx"},"statusCode":404,"timestamp":"2025-04-19T13:11:09.040Z"}
+{"level":"warn","message":"Uygulama Hatası: Kategori bulunamadı.","meta":{"ip":"::1","method":"GET","url":"/api/categories/node-jsx"},"statusCode":404,"timestamp":"2025-04-19T13:12:08.890Z"}
+{"level":"warn","message":"Uygulama Hatası: Kategori bulunamadı.","meta":{"ip":"::1","method":"GET","url":"/api/categories/node-jsx"},"statusCode":404,"timestamp":"2025-04-19T13:12:12.715Z"}

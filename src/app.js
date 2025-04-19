@@ -20,11 +20,13 @@ app.use(cookieParser());
 // Routes requirements
 const userRoutes = require('./routes/userRoutes');
 const authRoutes = require('./routes/authRoutes');
-
+const categoryRoutes = require('./routes/categoryRoutes');
 
 // Routes
 app.use('/api/users', userRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api/categories', categoryRoutes);
+
 
 // Error handling middleware
 app.use(errorHandler);

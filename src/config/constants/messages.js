@@ -69,6 +69,7 @@ const MESSAGES = Object.freeze({
   DB_CONNECTION_FAILED: "Veritabanına bağlanılamadı.",
   DB_OPERATION_FAILED: "Veritabanı işlemi başarısız oldu.",
   DUPLICATE_ENTRY: "Aynı kayıt zaten mevcut.",
+  CATEGORY_NOT_FOUND: "Kategori bulunamadı.",
 
   // Başarı mesajları
   SUCCESS: "İşlem başarılı.",

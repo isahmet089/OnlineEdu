@@ -1,4 +1,5 @@
 const userValidationRules = require("./userValidator");
+const {categoryValidationRules,updateCategoryValidationRules} = require("./categoryValidator");
 const validate = require("./validatorMiddleware");
 
 const validateRegistration = [
@@ -25,6 +26,22 @@ const validateResetPassword = [
   validate,
 ];
 
+//category validation rules
+const validateCategoryCreate = [
+  categoryValidationRules.name,
+  categoryValidationRules.description,
+  validate,
+];
+
+const updateCategoryValidation = [
+  updateCategoryValidationRules.name,
+  updateCategoryValidationRules.description,
+  validate,
+];
+
+
+
+
 
 
 module.exports = {
@@ -32,4 +49,7 @@ module.exports = {
   validateLogin,
   validateForgotPassword,
   validateResetPassword,
+
+  validateCategoryCreate,
+  updateCategoryValidation,
 };

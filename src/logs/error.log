@@ -1,0 +1,8 @@
+{"level":"error","message":"Beklenmeyen Hata: Categoy is not defined","meta":{"ip":"::1","method":"GET","url":"/api/categories/"},"statusCode":500,"timestamp":"2025-04-19T06:32:56.102Z"}
+{"level":"error","message":"Beklenmeyen Hata: category.save is not a function","meta":{"ip":"::1","method":"PUT","url":"/api/categories/node-js"},"statusCode":500,"timestamp":"2025-04-19T06:54:20.590Z"}
+{"level":"error","message":"Beklenmeyen Hata: category.save is not a function","meta":{"ip":"::1","method":"PUT","url":"/api/categories/node-js"},"statusCode":500,"timestamp":"2025-04-19T06:57:18.125Z"}
+{"level":"error","message":"Beklenmeyen Hata: Cannot read properties of null (reading 'length')","meta":{"ip":"::1","method":"DELETE","url":"/api/categories/node-jsasfdsaf"},"statusCode":500,"timestamp":"2025-04-19T07:41:22.189Z"}
+{"level":"error","message":"Beklenmeyen Hata: Cannot read properties of null (reading 'length')","meta":{"ip":"::1","method":"DELETE","url":"/api/categories/node-jsasfdsaf"},"statusCode":500,"timestamp":"2025-04-19T07:41:43.219Z"}
+{"level":"error","message":"Beklenmeyen Hata: Cannot read properties of null (reading 'length')","meta":{"ip":"::1","method":"DELETE","url":"/api/categories/node-jsasfdsaf"},"statusCode":500,"timestamp":"2025-04-19T07:42:32.683Z"}
+{"level":"error","message":"Beklenmeyen Hata: Cannot read properties of null (reading 'slug')","meta":{"ip":"::1","method":"DELETE","url":"/api/categories/node-jsasfdsaf"},"statusCode":500,"timestamp":"2025-04-19T07:43:43.698Z"}
+{"level":"error","message":"Beklenmeyen Hata: Cannot read properties of null (reading 'length')","meta":{"ip":"::1","method":"DELETE","url":"/api/categories/node-jsasfdsaf"},"statusCode":500,"timestamp":"2025-04-19T07:48:56.249Z"}
