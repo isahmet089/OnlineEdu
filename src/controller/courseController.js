@@ -4,6 +4,9 @@ const User = require("../models/User");
 const {HTTP_CODES,MESSAGES} = require("../config/constants");
 const AppError = require("../utils/appError");
 const FileService = require("../services/fileService");
+const path = require("path");
+
+
 const getAllCourses = async (req, res,next) => {
   try {
     const courses = await Course.find({}).populate("instructor", "firstName lastName email").populate("category", "name description");
@@ -27,11 +30,12 @@ const createCourse = async (req, res,next) => {
       duration,
       tags,
       level,
-      price
+      price,
     });
     await course.save();
     const fileService = new FileService();
-    fileService.createCourseFolder(categorySlug.slug, course.slug); // Create course folder
+    await fileService.createCourseFolder(categorySlug.slug, course.slug); // Create course folder
+
     res.status(HTTP_CODES.CREATED).json({message:MESSAGES.SUCCESS,course});
   } catch (error) {
     next(error);
@@ -113,6 +117,30 @@ const getCourseByCategorySlug = async (req, res,next) => {
   }
 };
 
+//thumbnail upload
+const uploadCourseThumbnail = async (req, res, next) => {
+  try {
+    const course = await Course.findOne({slug:req.params.courseSlug}).populate("category");
+    if (!course) return next(new AppError(MESSAGES.COURSE_NOT_FOUND, HTTP_CODES.NOT_FOUND));
+
+    const ext = path.extname(req.file.filename);
+    const relativePath = path.join(course.category.slug, course.slug, "thumbnail" + ext);
+
+    course.thumbnail = relativePath;
+    await course.save();
+
+    res.status(HTTP_CODES.OK).json({
+      message: MESSAGES.SUCCESS,
+      thumbnail: course.thumbnail
+    });
+
+  } catch (error) {
+    next(error);
+  }
+};
+
+
+
 
 
 module.exports = {
@@ -122,5 +150,6 @@ module.exports = {
     deleteCourse,
     getCourseBySlug,
     getCourseByCategorySlug,
-    getCourseByInstructorSlug
+    getCourseByInstructorSlug,
+    uploadCourseThumbnail
   };

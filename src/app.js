@@ -6,6 +6,7 @@ const morgan = require('morgan');
 const cookieParser = require('cookie-parser');
 const errorHandler  = require('./middleware/errorHandler');
 const securityMiddleware = require('./middleware/security');
+const path = require('path');
 
 // Security middleware
 securityMiddleware(app);
@@ -15,6 +16,7 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(morgan('dev'));
 app.use(cookieParser());
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 
 // Routes requirements
