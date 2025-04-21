@@ -124,6 +124,8 @@ const uploadCourseThumbnail = async (req, res, next) => {
     if (!course) return next(new AppError(MESSAGES.COURSE_NOT_FOUND, HTTP_CODES.NOT_FOUND));
 
     const ext = path.extname(req.file.filename);
+    console.log(req.file.filename);
+    console.log("ext",ext);
     const relativePath = path.join(course.category.slug, course.slug, "thumbnail" + ext);
 
     course.thumbnail = relativePath;

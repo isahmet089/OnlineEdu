@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const COURSE = require('../controller/courseController');
-const upload = require('../middleware/upload');
+const {courseThumbnailUpload} = require('../middleware/upload');
 //admin routes
 router.get('/',COURSE.getAllCourses);
 router.post('/',COURSE.createCourse);
@@ -14,7 +14,7 @@ router.get('/category/:slug',COURSE.getCourseByCategorySlug);
 router.get('/instructor/:slug',COURSE.getCourseByInstructorSlug);
 
 //thumbnail upload
-router.patch("/:courseSlug/thumbnail", upload.single("thumbnail"), COURSE.uploadCourseThumbnail);
+router.patch("/:courseSlug/thumbnail", courseThumbnailUpload.single("thumbnail"), COURSE.uploadCourseThumbnail);
 
 //instructor routes
 
