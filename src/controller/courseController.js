@@ -17,7 +17,10 @@ const getAllCourses = async (req, res,next) => {
   }
 };
 const createCourse = async (req, res,next) => {
-  const { title, description, category, instructor, duration, tags, level,price } = req.body;
+  const  user = req.user;
+  const instructor = user._id;
+  if (!instructor) return next(new AppError(MESSAGES.MISSING_FIELDS, HTTP_CODES.BAD_REQUEST));
+  const { title, description, category, duration, tags, level,price } = req.body;
   const categorySlug = await Category.findOne({_id:category});
   console.log(categorySlug.slug);
   if (!categorySlug) return next(new AppError(MESSAGES.CATEGORY_NOT_FOUND, HTTP_CODES.NOT_FOUND));
@@ -35,39 +38,47 @@ const createCourse = async (req, res,next) => {
     await course.save();
     const fileService = new FileService();
     await fileService.createCourseFolder(categorySlug.slug, course.slug); // Create course folder
-
     res.status(HTTP_CODES.CREATED).json({message:MESSAGES.SUCCESS,course});
   } catch (error) {
     next(error);
   }
 };
 const updateCourse = async (req, res,next) => {
+  const user = req.user;
+  const instructor = user._id;
   const { slug } = req.params;
-  const { title, description, category, instructor, duration, tags, level,price } = req.body;
+  const { title, description, category, duration, tags, level,price } = req.body;
   try {
     const course = await Course.findOne({slug:slug});
+    if(course.instructor.toString() !== instructor.toString()) return next(new AppError(MESSAGES.FORBIDDEN, HTTP_CODES.UNAUTHORIZED));
+   
     if (!course)  return next(new AppError(MESSAGES.COURSE_NOT_FOUND, HTTP_CODES.NOT_FOUND));
     if (title) course.title = title;
     if (description) course.description = description;
     if (category) course.category = category;
-    if (instructor) course.instructor = instructor;
     if (duration) course.duration = duration;
     if (tags) course.tags = tags;
     if (level) course.level = level;
     if (price) course.price = price;
     await course.save();
-    res.status(HTTP_CODES.OK).json({message:MESSAGES.UPDATED_SUCCESSFULLY,course});
+    const courseData = await Course.findOne(course).populate("category", "name description").populate("instructor", "firstName lastName email");
+    res.status(HTTP_CODES.OK).json({message:MESSAGES.UPDATED_SUCCESSFULLY,courseData});
   } catch (error) {
     next(error);
   }
 };
 const deleteCourse = async (req, res,next) => {
+  const instructor = req.user._id;
   const { slug } = req.params;
+  const coursess = await Course.findOne({slug:slug});
+  console.log(coursess.instructor.toString());
+  console.log(instructor.toString());
   try {
     const course = await Course.findOne({slug:slug});
+    if(course.instructor.toString() !== instructor.toString()) return next(new AppError(MESSAGES.FORBIDDEN, HTTP_CODES.UNAUTHORIZED));
     if (!course) return next(new AppError(MESSAGES.COURSE_NOT_FOUND, HTTP_CODES.NOT_FOUND));
     await course.deleteOne();
-    res.status(HTTP_CODES.OK).json({message:MESSAGES.DELETED_SUCCESSFULLY});
+    res.status(HTTP_CODES.OK).json({message:MESSAGES.DELETED_SUCCESSFULLY},course);
   } catch (error) {
     next(error);
   }
@@ -119,10 +130,12 @@ const getCourseByCategorySlug = async (req, res,next) => {
 
 //thumbnail upload
 const uploadCourseThumbnail = async (req, res, next) => {
+  const user = req.user; 
   try {
     const course = await Course.findOne({slug:req.params.courseSlug}).populate("category");
     if (!course) return next(new AppError(MESSAGES.COURSE_NOT_FOUND, HTTP_CODES.NOT_FOUND));
-
+    if (course.instructor.toString() !== user._id.toString()) return next(new AppError(MESSAGES.FORBIDDEN, HTTP_CODES.UNAUTHORIZED));
+    if (!req.file) return next(new AppError(MESSAGES.MISSING_FIELDS, HTTP_CODES.BAD_REQUEST));
     const ext = path.extname(req.file.filename);
     console.log(req.file.filename);
     console.log("ext",ext);
@@ -140,6 +153,8 @@ const uploadCourseThumbnail = async (req, res, next) => {
     next(error);
   }
 };
+
+
 
 
 

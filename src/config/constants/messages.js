@@ -98,6 +98,11 @@ const MESSAGES = Object.freeze({
   COURSE_ALREADY_PURCHASED: "Bu kurs zaten satın alındı.",
   NO_PAYMENTS_FOUND: "Ödeme kaydı bulunamadı.",
 
+  // Lesson işlemleri
+  LESSON_NOT_FOUND: "Ders bulunamadı.",
+  LESSON_CREATED: "Ders başarıyla oluşturuldu.",
+
+
 
 
 });

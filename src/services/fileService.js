@@ -19,6 +19,11 @@ class FileService {
     const relativePath = path.join(categorySlug, courseSlug);
     return this.createDirectory(relativePath);
   }
+   // Lesson klasörü için yeni bir helper metot ekleyebiliriz veya createDirectory'i kullanabiliriz.
+   createLessonFolder(categorySlug, courseSlug, lessonSlugOrId) {
+    const relativePath = path.join(categorySlug, courseSlug, 'lessons', lessonSlugOrId.toString()); // lesson için de bir alt klasör
+    return this.createDirectory(relativePath);
+}
 
 }
 
