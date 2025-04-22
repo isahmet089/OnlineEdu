@@ -44,6 +44,7 @@ const userSchema = new mongoose.Schema(
       lowercase: true,
       trim: true,
     },
+    purchasedCourses: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Course' }],
   },
   { timestamps: true }
 );

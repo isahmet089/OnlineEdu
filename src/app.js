@@ -7,7 +7,7 @@ const cookieParser = require('cookie-parser');
 const errorHandler  = require('./middleware/errorHandler');
 const securityMiddleware = require('./middleware/security');
 const path = require('path');
-
+const Iyzipay = require('iyzipay');
 // Security middleware
 securityMiddleware(app);
 
@@ -24,13 +24,18 @@ const userRoutes = require('./routes/userRoutes');
 const authRoutes = require('./routes/authRoutes');
 const categoryRoutes = require('./routes/categoryRoutes');
 const courseRoutes = require('./routes/courseRoutes');
-
+const paymentRoutes = require('./routes/paymentRoutes');
 
 // Routes
 app.use('/api/users', userRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/courses',courseRoutes);
+app.use('/api/payments', paymentRoutes);
+
+
+
+
 
 
 // Error handling middleware

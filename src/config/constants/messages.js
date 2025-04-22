@@ -83,6 +83,7 @@ const MESSAGES = Object.freeze({
 
   // Course işlemleri
   COURSE_NOT_FOUND: "Kurs bulunamadı.",
+  COURSE_ALREADY_PURCHASED: "Bu kurs zaten satın alındı.",
 
   // Category işlemleri
   CATEGORY_NOT_FOUND: "Kategori bulunamadı.",
@@ -90,6 +91,12 @@ const MESSAGES = Object.freeze({
   
   //Instructor işlemleri
   INSTRUCTOR_NOT_FOUND: "Eğitmen bulunamadı.",
+
+  // Payment işlemleri
+  PAYMENT_SUCCESS: "Ödeme başarılı.",
+  PAYMENT_FAILED: "Ödeme başarısız.",
+  COURSE_ALREADY_PURCHASED: "Bu kurs zaten satın alındı.",
+
 });
 
 module.exports = MESSAGES;
