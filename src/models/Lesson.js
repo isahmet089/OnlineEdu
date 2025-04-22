@@ -8,7 +8,8 @@ const LessonSchema = new mongoose.Schema({
   },
   description: { // Dersin kısa açıklaması veya içeriği
     type: String,
-    trim: true
+    trim: true,
+    required: true
   },
   course: { // Bu dersin hangi kursa ait olduğu (Course modeline referans)
     type: mongoose.Schema.Types.ObjectId,

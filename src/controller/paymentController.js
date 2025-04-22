@@ -10,8 +10,8 @@ const purchaseCourse = async (req, res, next) => {
         // Kimliği doğrulanmış kullanıcı bilgisi (Auth middleware'inizden gelmeli)
         const user = req.user; // Kullanıcı bilgisi (req.user) kimlik doğrulama middleware'inden gelmeli
         if (!user) return next(new AppError(HTTP_CODES.UNAUTHORIZED, MESSAGES.UNAUTHORIZED));
-        const courseId = req.params.courseId;
-        const course = await Course.findById(courseId).populate('category');
+        const courseSlug = req.params.courseSlug;
+        const course = await Course.findOne({slug:courseSlug}).populate('category');
 
         if (!course) {
             return res.status(HTTP_CODES.NOT_FOUND).json(MESSAGES.COURSE_NOT_FOUND);
@@ -46,6 +46,9 @@ const purchaseCourse = async (req, res, next) => {
             // Kullanıcının purchasedCourses listesine kursu ekle (User modelini güncelle)
             user.purchasedCourses.push(course._id);
             await user.save();
+            course.students.push(user._id);
+            await course.save();
+            
 
             console.log("Kurs satın alındı:", course._id, "Kullanıcı:", user._id);
             const payment = new Payment({

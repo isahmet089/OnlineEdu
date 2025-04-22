@@ -66,3 +66,5 @@
 {"level":"error","message":"Beklenmeyen Hata: course.populate(...).populate is not a function","meta":{"ip":"::1","method":"PUT","url":"/api/courses/vue"},"statusCode":500,"timestamp":"2025-04-22T20:19:35.086Z"}
 {"level":"error","message":"Beklenmeyen Hata: course.populate(...).populate is not a function","meta":{"ip":"::1","method":"PUT","url":"/api/courses/vue"},"statusCode":500,"timestamp":"2025-04-22T20:21:10.770Z"}
 {"level":"error","message":"Beklenmeyen Hata: Cannot read properties of null (reading 'instructor')","meta":{"ip":"::1","method":"DELETE","url":"/api/courses/react-native"},"statusCode":500,"timestamp":"2025-04-22T20:39:29.831Z"}
+{"level":"error","message":"Beklenmeyen Hata: next is not defined","meta":{"ip":"::1","method":"POST","url":"/api/lessons/create"},"statusCode":500,"timestamp":"2025-04-22T22:56:32.404Z"}
+{"level":"error","message":"Beklenmeyen Hata: next is not defined","meta":{"ip":"::1","method":"POST","url":"/api/lessons/create"},"statusCode":500,"timestamp":"2025-04-22T22:57:08.797Z"}
