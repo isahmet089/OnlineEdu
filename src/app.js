@@ -7,7 +7,7 @@ const cookieParser = require('cookie-parser');
 const errorHandler  = require('./middleware/errorHandler');
 const securityMiddleware = require('./middleware/security');
 const path = require('path');
-const Iyzipay = require('iyzipay');
+
 // Security middleware
 securityMiddleware(app);
 

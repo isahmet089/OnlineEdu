@@ -1,10 +1,11 @@
 const iyzicoService = require('../services/iyzicoServices');
 const Course = require('../models/Course'); // Kurs modeliniz
+const Payment = require('../models/Payment'); 
 const AppError = require('../utils/appError');
 const { HTTP_CODES, MESSAGES } = require('../config/constants');
 
 
-exports.purchaseCourse = async (req, res, next) => {
+const purchaseCourse = async (req, res, next) => {
     try {
         // Kimliği doğrulanmış kullanıcı bilgisi (Auth middleware'inizden gelmeli)
         const user = req.user; // Kullanıcı bilgisi (req.user) kimlik doğrulama middleware'inden gelmeli
@@ -46,9 +47,20 @@ exports.purchaseCourse = async (req, res, next) => {
             user.purchasedCourses.push(course._id);
             await user.save();
 
-            // Satın alma kaydını Purchase/Order modeline kaydet
-            // await Purchase.create({ user: user._id, course: course._id, iyzicoResponse: paymentResult.rawResult, status: 'completed', amount: course.price });
+            console.log("Kurs satın alındı:", course._id, "Kullanıcı:", user._id);
+            const payment = new Payment({
+                user: user._id,
+                course: course._id,
+                iyzicoPaymentId: paymentResult.data.paymentId,
+                iyzicoConversationId: paymentResult.data.conversationId,
+                status: 'success',
+                paidPrice: course.price,
+                currency: 'TRY'
+            });
+            await payment.save(); // Ödeme kaydını veritabanına kaydet
 
+            // await Purchase.create({ user: user._id, course: course._id, iyzicoResponse: paymentResult.rawResult, status: 'completed', amount: course.price });
+            
 
             res.status(HTTP_CODES.OK).json({
                 success: true,
@@ -73,6 +85,27 @@ exports.purchaseCourse = async (req, res, next) => {
          if (error && error.message && error.errorCode) { // Iyzipay kütüphanesinin döndürdüğü hatalar
               return res.status(400).json({ success: false, message: `Iyzico Hatası: ${error.errorMessage || error.message}`, code: error.errorCode });
          }
-        next(error); // Diğer hataları genel hata işleyiciye gönder
+        next(error); // Diğer hatalar
     }
+};
+
+const getPayments = async (req, res, next) => {
+    try {
+        const payments = await Payment.find().populate('user', 'firstName lastName email').populate('course', 'title price').sort({ createdAt: -1 });
+        if (!payments || payments.length === 0) {
+            return res.status(HTTP_CODES.NOT_FOUND).json({ success: false, message: MESSAGES.NO_PAYMENTS_FOUND });
+        }
+        res.status(HTTP_CODES.OK).json({
+            success: true,
+            data: payments
+        });
+    } catch (error) {
+        console.error("Error in getPayments controller:", error);
+        next(error);
+    }
+};
+
+module.exports = {
+    purchaseCourse,
+    getPayments
 };

@@ -96,6 +96,9 @@ const MESSAGES = Object.freeze({
   PAYMENT_SUCCESS: "Ödeme başarılı.",
   PAYMENT_FAILED: "Ödeme başarısız.",
   COURSE_ALREADY_PURCHASED: "Bu kurs zaten satın alındı.",
+  NO_PAYMENTS_FOUND: "Ödeme kaydı bulunamadı.",
+
+
 
 });
 
