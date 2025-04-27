@@ -101,7 +101,10 @@ const MESSAGES = Object.freeze({
   // Lesson işlemleri
   LESSON_NOT_FOUND: "Ders bulunamadı.",
   LESSON_CREATED: "Ders başarıyla oluşturuldu.",
+  LESSON_DELETED: "Ders başarıyla silindi.",
 
+  //kurs lesson işlemleri
+  PAYMENT_REQUIRED_COURSE: "Bu kursu izlemek için ödeme yapmalısınız.",
 
 
 

@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-
+const slugify = require('slugify'); // Slug oluşturmak için
 const LessonSchema = new mongoose.Schema({
   title: { // Dersin başlığı
     type: String,
@@ -10,6 +10,11 @@ const LessonSchema = new mongoose.Schema({
     type: String,
     trim: true,
     required: true
+  },
+  slug: {
+    type: String,
+    unique: true,
+    trim: true
   },
   course: { // Bu dersin hangi kursa ait olduğu (Course modeline referans)
     type: mongoose.Schema.Types.ObjectId,
@@ -40,6 +45,22 @@ const LessonSchema = new mongoose.Schema({
 
 // İsteğe bağlı olarak, bir kurs içindeki ders sırasının benzersizliğini sağlamak için index:
 // LessonSchema.index({ course: 1, order: 1 }, { unique: true });
+// Slug otomatik oluşturma
+LessonSchema.pre('save', async function (next) {
+  if (!this.isModified('title')) return next();
+
+  let baseSlug = slugify(this.title, { lower: true, strict: true });
+  let slug = baseSlug;
+  let count = 1;
+
+  // Slug benzersiz olana kadar kontrol et
+  while (await mongoose.models.Lesson.findOne({ slug })) {
+    slug = `${baseSlug}-${count++}`;
+  }
+
+  this.slug = slug;
+  next();
+});
 
 
 module.exports = mongoose.model('Lesson', LessonSchema);

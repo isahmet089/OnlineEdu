@@ -15,17 +15,18 @@ const getAllUsers = async (req, res, next) => {
 
 // Yeni kullanıcı oluştur
 const createUser = async (req, res, next) => {
-  const { firstName, lastName, email, password, role } = req.body;
+  const { userName,firstName, lastName, email, password, role } = req.body;
 
   try {
     // Gerekli alanların olup olmadığını kontrol et
-    if (!firstName || !lastName || !email || !password) {
+    if (!firstName || !lastName || !email || !password || !userName) {
       console.log("Eksik kullanıcı bilgileri:", req.body);
-      throw new AppError(MESSAGES.MISSING_FIELDS, HTTP_CODES.BAD_REQUEST);
+      return next(new AppError(MESSAGES.MISSING_FIELDS, HTTP_CODES.BAD_REQUEST));
     }
 
     // Kullanıcıyı oluştur
     const user = new User({
+      userName,
       firstName,
       lastName,
       email,

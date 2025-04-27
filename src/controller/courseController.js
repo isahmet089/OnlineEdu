@@ -21,14 +21,13 @@ const createCourse = async (req, res,next) => {
   const instructor = user._id;
   if (!instructor) return next(new AppError(MESSAGES.MISSING_FIELDS, HTTP_CODES.BAD_REQUEST));
   const { title, description, category, duration, tags, level,price } = req.body;
-  const categorySlug = await Category.findOne({_id:category});
-  console.log(categorySlug.slug);
-  if (!categorySlug) return next(new AppError(MESSAGES.CATEGORY_NOT_FOUND, HTTP_CODES.NOT_FOUND));
+  const categoryFind = await Category.findOne({slug:category});
+  if (!categoryFind) return next(new AppError(MESSAGES.CATEGORY_NOT_FOUND, HTTP_CODES.NOT_FOUND));
   try {
     const course = new Course({
       title,
       description,
-      category,
+      category: categoryFind._id,
       instructor,
       duration,
       tags,
@@ -37,7 +36,7 @@ const createCourse = async (req, res,next) => {
     });
     await course.save();
     const fileService = new FileService();
-    await fileService.createCourseFolder(categorySlug.slug, course.slug); // Create course folder
+    await fileService.createCourseFolder(categoryFind.slug, course.slug); // Create course folder
     res.status(HTTP_CODES.CREATED).json({message:MESSAGES.SUCCESS,course});
   } catch (error) {
     next(error);
@@ -68,17 +67,20 @@ const updateCourse = async (req, res,next) => {
   }
 };
 const deleteCourse = async (req, res,next) => {
-  const instructor = req.user._id;
   const { slug } = req.params;
-  const coursess = await Course.findOne({slug:slug});
-  console.log(coursess.instructor.toString());
-  console.log(instructor.toString());
+  if (!slug) return next(new AppError(MESSAGES.MISSING_FIELDS, HTTP_CODES.BAD_REQUEST));
+  const course = await Course.findOne({slug:slug});
+
+  if(req.user.roles.includes("admin")){ 
+    await course.deleteOne();
+    res.status(HTTP_CODES.OK).json({message:MESSAGES.DELETED_SUCCESSFULLY ,course});
+  }
   try {
-    const course = await Course.findOne({slug:slug});
+    const instructor = req.user._id;
     if(course.instructor.toString() !== instructor.toString()) return next(new AppError(MESSAGES.FORBIDDEN, HTTP_CODES.UNAUTHORIZED));
     if (!course) return next(new AppError(MESSAGES.COURSE_NOT_FOUND, HTTP_CODES.NOT_FOUND));
     await course.deleteOne();
-    res.status(HTTP_CODES.OK).json({message:MESSAGES.DELETED_SUCCESSFULLY},course);
+    res.status(HTTP_CODES.OK).json({message:MESSAGES.DELETED_SUCCESSFULLY,course});
   } catch (error) {
     next(error);
   }
@@ -153,12 +155,6 @@ const uploadCourseThumbnail = async (req, res, next) => {
     next(error);
   }
 };
-
-
-
-
-
-
 
 module.exports = {
     getAllCourses,

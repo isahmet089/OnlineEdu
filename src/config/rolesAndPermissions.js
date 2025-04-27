@@ -56,7 +56,6 @@ const rolePermissions = {
       PERMISSIONS.MANAGE_OWN_COURSES,       // *Sadece kendi* kurslarını yönetir.
       PERMISSIONS.CREATE_COURSE_CONTENT,    // Kurs/içerik oluşturabilir.
       PERMISSIONS.VIEW_COURSES,             // Kursları görür.
-      PERMISSIONS.VIEW_USERS,               // Kullanıcıları listeler (genellikle kendi öğrencileri).
       PERMISSIONS.ACCESS_ENROLLED_COURSE_CONTENT, // Kendi kurs içeriklerine erişir.
       PERMISSIONS.GRADE_SUBMISSIONS,        // Kendi kurslarındaki gönderimleri notlandırır.
       PERMISSIONS.VIEW_STUDENT_PROGRESS,    // Kendi öğrencilerinin ilerlemesini görür.
