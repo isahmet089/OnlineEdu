@@ -1,7 +1,7 @@
 const User = require('../models/User');
 const { HTTP_CODES, MESSAGES } = require('../config/constants'); // Log ve mesajlar için
 const AppError = require('../utils/appError'); // Hata yönetimi için
-
+const { ROLES } = require('../config/rolesAndPermissions'); // Roller için
 // Tüm kullanıcıları al
 const getAllUsers = async (req, res, next) => {
   try {
@@ -96,9 +96,48 @@ const deleteUser = async (req, res, next) => {
   }
 };
 
+// Kullanıcıyı yetkilendir (örneğin, admin yap)
+const authorizeUser = async (req, res, next) => {
+  const { username } = req.params;
+  const { role } = req.body; // Yeni rol bilgisi
+
+  // Role doğrulama
+  if (!role || !Object.values(ROLES).includes(role)) {
+    return next(new AppError(MESSAGES.ROLE_NOT_FOUND, HTTP_CODES.BAD_REQUEST));
+  }
+
+  try {
+    // Kullanıcıyı bul
+    const user = await User.findOne({ userName: username });
+    if (!user) {
+      return next(new AppError(MESSAGES.USER_NOT_FOUND, HTTP_CODES.NOT_FOUND));
+    }
+
+    // Kullanıcının rolü zaten varsa
+    if (user.roles.includes(role)) {
+      return res.status(HTTP_CODES.CONFLICT).json({
+        message: MESSAGES.ROLE_ALREADY_EXISTS
+      });
+    }
+
+    // Yeni rolü ekle
+    user.roles.push(role);
+    await user.save();
+    
+    res.status(HTTP_CODES.OK).json({
+      message: MESSAGES.ROLE_UPDATED,
+      user
+    });
+  } catch (error) {
+    next(error); // Hata yönetimi
+  }
+};
+
+
 module.exports = {
   getAllUsers,
   createUser,
   updateUser,
   deleteUser,
+  authorizeUser,
 };

@@ -290,3 +290,18 @@
 {"level":"error","message":"Beklenmeyen Hata: Cannot read properties of undefined (reading '_id')","meta":{"ip":"::1","method":"POST","url":"/api/lessons/vue/add"},"statusCode":500,"timestamp":"2025-04-27T19:27:23.854Z"}
 {"level":"warn","message":"Uygulama Hatası: Token gereklidir.","meta":{"ip":"::1","method":"POST","url":"/api/lessons/vue/add"},"statusCode":403,"timestamp":"2025-04-27T19:27:51.419Z"}
 {"level":"warn","message":"Uygulama Hatası: Bu işlemi yapmak için yeterli izniniz yok.","meta":{"ip":"::1","method":"GET","url":"/api/users/"},"statusCode":403,"timestamp":"2025-04-27T19:33:00.856Z"}
+{"level":"warn","message":"Uygulama Hatası: Token gereklidir.","meta":{"ip":"::1","method":"GET","url":"/api/lessons/vue/lessons"},"statusCode":403,"timestamp":"2025-04-27T20:37:19.217Z"}
+{"level":"warn","message":"Uygulama Hatası: Token gereklidir.","meta":{"ip":"::1","method":"GET","url":"/api/users/"},"statusCode":403,"timestamp":"2025-04-27T21:25:01.771Z"}
+{"level":"warn","message":"Uygulama Hatası: E-posta adresi bulunamadı.","meta":{"ip":"::1","method":"POST","url":"/api/auth/login"},"statusCode":400,"timestamp":"2025-04-27T21:25:07.192Z"}
+{"level":"warn","message":"Uygulama Hatası: Bu işlemi yapmak için yeterli izniniz yok.","meta":{"ip":"::1","method":"POST","url":"/api/courses/"},"statusCode":403,"timestamp":"2025-04-27T22:02:15.345Z"}
+{"level":"warn","message":"Uygulama Hatası: Bu işlemi yapmak için yeterli izniniz yok.","meta":{"ip":"::1","method":"POST","url":"/api/categories/"},"statusCode":403,"timestamp":"2025-04-27T22:02:22.817Z"}
+{"level":"warn","message":"Uygulama Hatası: Bu işlemi yapmak için yeterli izniniz yok.","meta":{"ip":"::1","method":"POST","url":"/api/categories/"},"statusCode":403,"timestamp":"2025-04-27T22:02:41.262Z"}
+{"level":"warn","message":"Uygulama Hatası: Bu işlemi yapmak için yeterli izniniz yok.","meta":{"ip":"::1","method":"POST","url":"/api/categories/"},"statusCode":403,"timestamp":"2025-04-27T22:13:53.848Z"}
+{"level":"warn","message":"Uygulama Hatası: Token gereklidir.","meta":{"ip":"::1","method":"GET","url":"/api/users/"},"statusCode":403,"timestamp":"2025-04-27T22:15:18.532Z"}
+{"level":"warn","message":"Uygulama Hatası: Bu işlemi yapmak için yeterli izniniz yok.","meta":{"ip":"::1","method":"POST","url":"/api/lessons/react/add"},"statusCode":403,"timestamp":"2025-04-27T22:21:14.731Z"}
+{"level":"warn","message":"Uygulama Hatası: Bu işlemi yapmak için yeterli izniniz yok.","meta":{"ip":"::1","method":"DELETE","url":"/api/lessons/vue/lesson/ders-1-giris-konulari"},"statusCode":403,"timestamp":"2025-04-27T22:21:37.550Z"}
+{"level":"warn","message":"Uygulama Hatası: E-posta adresi bulunamadı.","meta":{"ip":"::1","method":"POST","url":"/api/auth/login"},"statusCode":400,"timestamp":"2025-04-27T22:32:43.552Z"}
+{"level":"warn","message":"Uygulama Hatası: Token gereklidir.","meta":{"ip":"::1","method":"GET","url":"/api/users/"},"statusCode":403,"timestamp":"2025-04-30T08:31:11.380Z"}
+{"level":"warn","message":"Uygulama Hatası: Token gereklidir.","meta":{"ip":"::1","method":"GET","url":"/api/lessons/vue/lessons"},"statusCode":403,"timestamp":"2025-04-30T08:31:18.425Z"}
+{"level":"warn","message":"Uygulama Hatası: Bu işlemi yapmak için yeterli izniniz yok.","meta":{"ip":"::1","method":"GET","url":"/api/users/"},"statusCode":403,"timestamp":"2025-04-30T08:31:32.296Z"}
+{"level":"warn","message":"Uygulama Hatası: Bu işlemi yapmak için yeterli izniniz yok.","meta":{"ip":"::1","method":"DELETE","url":"/api/lessons/vue/lesson/ders-1-giris-konulari"},"statusCode":403,"timestamp":"2025-04-30T08:34:06.311Z"}

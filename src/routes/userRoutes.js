@@ -25,6 +25,12 @@ router.delete('/:id',
     checkPermission(PERMISSIONS.MANAGE_USERS),
     userController.deleteUser);
 
+// kullanıcıyı yetkilendir
+router.patch('/:username/authorize',
+    authenticate,
+    checkPermission(PERMISSIONS.MANAGE_USERS),
+    userController.authorizeUser);
+
 
 
 module.exports = router;    

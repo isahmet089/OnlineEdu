@@ -106,6 +106,12 @@ const MESSAGES = Object.freeze({
   //kurs lesson işlemleri
   PAYMENT_REQUIRED_COURSE: "Bu kursu izlemek için ödeme yapmalısınız.",
 
+  //role işlemleri
+  ROLE_NOT_FOUND: "Rol bulunamadı.",
+  ROLE_ALREADY_EXISTS: "Bu rol zaten mevcut.",
+  ROLE_CREATED: "Rol başarıyla oluşturuldu.",
+  ROLE_UPDATED: "Rol başarıyla güncellendi.",
+
 
 
 });
