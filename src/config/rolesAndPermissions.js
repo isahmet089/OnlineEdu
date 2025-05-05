@@ -31,7 +31,9 @@ const ROLES = {
     GRADE_SUBMISSIONS: 'grade_submissions',     // Eğitmenin veya yöneticinin, öğrencilerin gönderdiği ödevleri/sınavları inceleyip notlandırma yetkisi.
     VIEW_OWN_PROGRESS: 'view_own_progress',     // Öğrencinin bir kurstaki veya genel olarak platformdaki kendi ilerlemesini (tamamlanan dersler, notlar vb.) görme yetkisi.
     VIEW_STUDENT_PROGRESS: 'view_student_progress', // Eğitmenin, *kendi kurslarına kayıtlı* öğrencilerin ilerlemesini ve notlarını takip etme yetkisi.
-  
+    
+    REVIEW_OWN_COURSES_CREATED: 'review_own_courses',        // Öğrencinin, kurslar için yorum yapabilme yetkisi.
+    MANAGE_OWN_REVIEWS: 'manage_reviews',         // Öğrencinin, kurslar için yapılan yorumları yönetebilme yetkisi (silme, düzenleme vb.).
     // === Diğer Kategori/Yapılandırma ===
     MANAGE_CATEGORIES: 'manage_categories'      // Kursların sınıflandırıldığı kategorileri (örn: Yazılım, Tasarım, Pazarlama) oluşturma, düzenleme ve silme yetkisi.
   };
@@ -68,7 +70,9 @@ const rolePermissions = {
       PERMISSIONS.ACCESS_ENROLLED_COURSE_CONTENT, // Kayıtlı olduğu kurs içeriklerine erişir.
       PERMISSIONS.SUBMIT_ASSIGNMENT,        // Ödev/sınav gönderebilir.
       PERMISSIONS.VIEW_OWN_PROGRESS,         // Kendi ilerlemesini/notlarını görür.
-      PERMISSIONS.MANAGE_OWN_PROFILE      // Kendi profilini yönetir (opsiyonel).
+      PERMISSIONS.MANAGE_OWN_PROFILE,     // Kendi profilini yönetir (opsiyonel).
+      PERMISSIONS.REVIEW_OWN_COURSES_CREATED, // Kendi kursları için yorum yapabilir.
+      PERMISSIONS.MANAGE_OWN_REVIEWS        // Kendi yorumlarını yönetebilir (opsiyonel).
     ]
   };
   

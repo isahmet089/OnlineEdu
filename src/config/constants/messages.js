@@ -85,6 +85,8 @@ const MESSAGES = Object.freeze({
   COURSE_NOT_FOUND: "Kurs bulunamadı.",
   COURSE_ALREADY_PURCHASED: "Bu kurs zaten satın alındı.",
 
+
+
   // Category işlemleri
   CATEGORY_NOT_FOUND: "Kategori bulunamadı.",
 
@@ -112,7 +114,16 @@ const MESSAGES = Object.freeze({
   ROLE_CREATED: "Rol başarıyla oluşturuldu.",
   ROLE_UPDATED: "Rol başarıyla güncellendi.",
 
-
+  // Review işlemleri
+  REVIEW_NOT_FOUND: "Yorum bulunamadı.",
+  REVIEW_ALREADY_EXISTS: "Bu kurs için zaten bir yorum yapılmış.",
+  REVIEW_CREATED: "Yorum başarıyla oluşturuldu.", 
+  REVIEW_UPDATED: "Yorum başarıyla güncellendi.", 
+  REVIEW_DELETED: "Yorum başarıyla silindi.", 
+  REVIEW_REQUIRED_FIELDS: "Yorum bilgileri gereklidir.",
+  REVIEW_PURCHASE_REQUIRED: "Bu kurs için yorum yapabilmek için önce kursu satın almanız gerekmektedir.",
+  JUST_OWN_REVIEW: "Sadece kendi yorumunuzu güncelleyebilirsiniz.",
+  
 
 });
 

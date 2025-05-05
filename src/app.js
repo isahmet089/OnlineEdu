@@ -26,7 +26,7 @@ const categoryRoutes = require('./routes/categoryRoutes');
 const courseRoutes = require('./routes/courseRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
 const lessonRoutes = require('./routes/lessonRoutes');
-
+const reviewsRoutes = require('./routes/reviewRoutes');
 // Routes
 app.use('/api/users', userRoutes);
 app.use('/api/auth', authRoutes);
@@ -34,6 +34,7 @@ app.use('/api/categories', categoryRoutes);
 app.use('/api/courses',courseRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/lessons', lessonRoutes);
+app.use('/api/reviews',reviewsRoutes);
 
 
 
